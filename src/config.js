@@ -9,55 +9,35 @@ import RpcSubprovider from 'web3-provider-engine/subproviders/rpc.js';
 import * as state from './state';
 
 export const defaultConfig = {
+  // Mainnet
   addresses: {
-    // optional: Allows to do market operations without passing the
-    // market address
-    defaultMarket: '0x3ddb5f64c40ea7fc7544246e9f372f74f9916b2b',
-
-    // optional: Allows calculating of share prices without passing the
-    // maker address
-    defaultMarketMaker: '0xfaf8913492cef6e4a99904962703529b8f3ad781',
-
-    // obligatory
-    etherToken: '0x4955fd25df125d1abf23d45df1d094111f4b864e',
-
-    // obligatory
-    events: '0x631298cdbd72d1f2cb4b8e5120d3f8c41b8abe97',
-
-    // optional
-    ultimateOracle: '0x97ed93a5cebf62a7a48ebbbef7f16b87a80fee90',
-    // optional
-    lmsrMarketMaker: '0x3ddb5f64c40ea7fc7544246e9f372f74f9916b2b'
+    defaultMarket: '0x6ca7f214ab2ddbb9a8e1a1e2c8550e3164e9dba5',
+    defaultMarketMaker: '0x8695e5e79dab06fbbb05f445316fa4edb0da30f0',
+    etherToken: '0x92f1dbea03ce08225e31e95cc926ddbe0198e6f2',
+    events: '0x5aae5c59d642e5fd45b427df6ed478b49d55fefd',
+    ultimateOracle: '0x529c4cb814029b8bb32acb516ea3a4b07fdae350',
+    lmsrMarketMaker: '0x8695e5e79dab06fbbb05f445316fa4edb0da30f0'
   },
-  addressFiltersPostLoad: {
-    marketMakers: ['0xfaf8913492cef6e4a99904962703529b8f3ad781'],
-    oracles: ['0x97ed93a5cebf62a7a48ebbbef7f16b87a80fee90'],
-    tokens: [
-      '0x4955fd25df125d1abf23d45df1d094111f4b864e',
-      '0xce2562752c3d635b94be9b18f2250ddc638aadca'],
-  },
-
   addressFilters: {
-    // optional: Only loads events from blockchain, which are resolved by
-    // given oracle
-    oracle: '0x97ed93a5cebf62a7a48ebbbef7f16b87a80fee90',
-    // optional: Only loads markets from blockchain, which are created by
-    // given investor
-    investor: null,
+    oracle: '0x529c4cb814029b8bb32acb516ea3a4b07fdae350',
+    investor: '0x0',
   },
-
   eventDescriptionFilters: {
-    // resolutionDate: new Date(new Date().getTime() + 3600000*24*60),
     oracleAddresses: null,
     includeWhitelistedOracles: false,
-    pageSize: 50// number of events returned by API for each page
+    pageSize: 10
+  },
+  addressFiltersPostLoad: {
+    marketMakers: ['0x8695e5e79dab06fbbb05f445316fa4edb0da30f0'],
+    oracles: ['0x529c4cb814029b8bb32acb516ea3a4b07fdae350'],
+    tokens: ['0x92f1dbea03ce08225e31e95cc926ddbe0198e6f2'],
   },
 
-  defaultGas: 3000000,
+  defaultGas: 100000,
   defaultGasPrice: new BigNumber('5e10'), // 50 gwei
 
-  gnosisServiceURL: 'http://localhost:8050/api/',
-  ethereumNodeURL: 'http://127.0.0.1:8545',
+  gnosisServiceURL: 'https://www.gnosis.pm/api/',
+  ethereumNodeURL: 'https://mainnet.infura.io/',
 
   persistTransactions: false,
   transactionConfirmCallback: null,

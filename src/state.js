@@ -625,7 +625,7 @@ export function updateBaseFee(config){
 
 export function buildState(config, tokenAddresses, marketAddresses) {
     if(!tokenAddresses){
-        tokenAddresses = [0, config.addresses.defaultMarket];
+        tokenAddresses = [config.addresses.etherToken];
     }
 
     if(!marketAddresses){
