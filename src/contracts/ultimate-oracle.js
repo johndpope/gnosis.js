@@ -25,7 +25,7 @@ export function getOracleOutcomes(descriptionHashes, oracleAddresses, config,
     );
 }
 
-export function challengeWinningOutcome(descriptionHash, outcome, challengeAmount, config,
+export function challengeOracle(descriptionHash, oracle, outcome, config,
   callback){
     const contractInstance = config.web3.eth
       .contract(abi.ultimateOracle)
@@ -33,17 +33,18 @@ export function challengeWinningOutcome(descriptionHash, outcome, challengeAmoun
 
     const args = [
         descriptionHash,
+        oracle,
         outcome,
-        Object.assign({value: challengeAmount}, txDefaults(config))
+        txDefaults(config)
     ];
 
     const booleanSuccessTest = res => res;
     return callAndSendTransaction(
-        contractInstance.challengeWinningOutcome,
-        "challengeWinningOutcome",
+        contractInstance.challengeOracle,
+        "challengeOracle",
         args,
         config,
-        errorOnFailure('challengeWinningOutcome', booleanSuccessTest),
+        errorOnFailure('challengeOracle', booleanSuccessTest),
         callback);
 }
 
@@ -91,7 +92,8 @@ export function voteForUltimateOutcome(descriptionHash, outcome, voteValue,
     const args = [
         descriptionHash,
         outcome,
-        Object.assign({value: voteValue}, txDefaults(config))
+        voteValue,
+        txDefaults(config)
     ];
 
     const booleanSuccessTest = res => res;
@@ -104,19 +106,20 @@ export function voteForUltimateOutcome(descriptionHash, outcome, voteValue,
         callback);
 }
 
-export function getUltimateOutcomes(descriptionHashes, config, callback){
+export function getUltimateOutcomes(descriptionHashes, outcomes, config, callback){
     const contractInstance = config.web3.eth
       .contract(abi.ultimateOracle)
       .at(config.addresses.ultimateOracle);
     return requestWithBlockNumber(
         contractInstance.getUltimateOutcomes,
         descriptionHashes,
+        outcomes,
         'latest',
         callback
     );
 }
 
-export function withdraw(descriptionHash, config, callback){
+export function redeemWinnings(descriptionHash, config, callback){
     const contractInstance = config.web3.eth
       .contract(abi.ultimateOracle)
       .at(config.addresses.ultimateOracle);
@@ -128,11 +131,11 @@ export function withdraw(descriptionHash, config, callback){
 
     const booleanSuccessTest = res => res;
     return callAndSendTransaction(
-        contractInstance.withdraw,
-        "withdraw",
+        contractInstance.redeemWinnings,
+        "redeemWinnings",
         args,
         config,
-        errorOnFailure('withdraw', booleanSuccessTest),
+        errorOnFailure('redeemWinnings', booleanSuccessTest),
         callback);
 }
 

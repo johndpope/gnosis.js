@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
-import * as events from './contracts/events';
-import * as market from './contracts/abstract-market';
+import * as eventFactory from './contracts/event-factory';
+import * as marketFactory from './contracts/market-factory';
 
 const ONE = new BigNumber('0x10000000000000000');
 
@@ -136,7 +136,7 @@ export function calcCostsBuying(initialFunding, shareDistribution, selectedOutco
   const invB = ln(outcomeCount.mul(ONE)).dividedToIntegerBy(10000);
   const lowestShares = min(shareDistributionCopy);
   const highestShares = max(shareDistributionCopy);
-  
+
   const c1 = calcC(invB, shareDistributionCopy, lowestShares, highestShares, initialFunding);
   shareDistributionCopy[selectedOutcome] = shareDistributionCopy[selectedOutcome].minus(sharesWanted);
   const c2 = calcC(invB, shareDistributionCopy, lowestShares, highestShares, initialFunding);
@@ -155,10 +155,10 @@ export function calcCostsBuying(initialFunding, shareDistribution, selectedOutco
 export function calcCostsBuyingWithFees(marketHash, initial_funding, share_distribution, selected_outcome,
                                         shares_wanted, config) {
   // get base fee
-  events.calcBaseFeeForShares(shares_wanted, config)
+  eventFactory.calcBaseFeeForShares(shares_wanted, config)
       .then((baseFee) => {
         let costs = calcCostsBuying(initial_funding, share_distribution, selected_outcome, shares_wanted);
-        return market.calcMarketFee(marketHash, costs, config, config.addresses.lmsrMarketMaker)
+        return marketFactory.calcMarketFee(marketHash, costs, config, config.addresses.lmsrMarketMaker)
           .then((marketFee) => {
               return costs.plus(baseFee).plus(marketFee);
           });
@@ -186,7 +186,7 @@ export function calcEarningsSelling(initial_funding, share_distribution, selecte
 export function calcEarningsSellingWithFees(marketHash, initial_funding, share_distribution, selected_outcome,
                                             shares_wanted, config){
   let earnings = calcEarningsSelling(initial_funding, share_distribution, selected_outcome, shares_wanted);
-  return market.calcMarketFee(marketHash, earnings, config, config.addresses.lmsrMarketMaker)
+  return marketFactory.calcMarketFee(marketHash, earnings, config, config.addresses.lmsrMarketMaker)
     .then((marketFee) => {
       return earnings.min(marketFee);
     });

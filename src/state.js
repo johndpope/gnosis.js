@@ -1,12 +1,11 @@
 /**
  * Created by denisgranha on 13/4/16.
  */
-import * as eventToken from './contracts/events';
-import * as abstractToken from './contracts/abstract-token';
-import * as market from './contracts/abstract-market';
-import * as marketMaker from './contracts/abstract-market-maker';
+import * as eventFactory from './contracts/event-factory';
+import * as abstractToken from './contracts/token';
+import * as marketFactory from './contracts/market-factory';
+import * as marketMaker from './contracts/market-maker';
 import * as api from './api';
-import * as MarketMakerLib from './market-maker';
 import BigNumber from 'bignumber.js';
 import _ from 'lodash';
 import {promiseCallback} from './lib/callbacks';
@@ -110,164 +109,167 @@ export function updateEventDescriptions(config, filters){
   // passed filters have priority
   Object.assign(defaultFilters, filters);
 
-    return new Promise((resolve, reject) => {
-      // Get description hashes from Django API
-      // oracle_addresses, resolution_date_gt, include_whitelisted_oracles
-      api.getEvents(config,
+  return new Promise((resolve, reject) => {
+    // Get description hashes from Django API
+    // oracle_addresses, resolution_date_gt, include_whitelisted_oracles
+    api.getEvents(config,
+      {
+        description_hashes: defaultFilters.descriptionHashes,
+        include_whitelisted_oracles: defaultFilters.includeWhitelistedOracles,
+        oracle_addresses: defaultFilters.oracleAddresses,
+        creator_address: defaultFilters.creatorAddress,
+        page_size: defaultFilters.pageSize,
+        page: defaultFilters.page,
+        title: defaultFilters.title,
+        tags: defaultFilters.tags
+      }
+    )
+    .then((eventResponse) => {
+      state.eventCount = eventResponse.data.count;
+      let events = eventResponse.data.results;
+      let eventDescriptions = {};
+
+      events.map((event) => {
+        // Check descriptionHash is the same
+        let identifiers = helpers
+          .getEventIdentifiers(JSON.parse(event.descriptionJSON));
+
+
+        // Check that descriptionHash = sha3(descriptionJSON)
+        // check descriptionJSON has needed fields title, description,
+        // resolutionDate, outcomes...
+        // check outcomeCount > 1
+        // check descriptionJSON properties types: resolutionDate, title,
+        // description...
+        let descriptionJSON = JSON.parse(event.descriptionJSON);
+        if (
+          identifiers.descriptionHash == event.descriptionHash &&
+          typeof descriptionJSON.title == "string" &&
+          typeof descriptionJSON.description == "string" &&
+          descriptionJSON.resolutionDate &&
+          (
+            (
+              Array.isArray(descriptionJSON.outcomes) &&
+              descriptionJSON.outcomes.length > 1
+            ) ||
+            (descriptionJSON.unit && descriptionJSON.decimals != undefined)
+          )
+        )
         {
-            description_hashes: defaultFilters.descriptionHashes,
-            include_whitelisted_oracles: defaultFilters.includeWhitelistedOracles,
-            oracle_addresses: defaultFilters.oracleAddresses,
-            creator_address: defaultFilters.creatorAddress,
-            page_size: defaultFilters.pageSize,
-            page: defaultFilters.page
-        }
-      )
-        .then((eventResponse) => {
-          state.eventCount = eventResponse.data.count;
-          let events = eventResponse.data.results;
-          let eventDescriptions = {};
-
-          events.map((event) => {
-            // Check descriptionHash is the same
-            let identifiers = helpers
-              .getEventIdentifiers(JSON.parse(event.descriptionJSON));
+          event.descriptionJSON = JSON.parse(event.descriptionJSON);
+          event.descriptionJSON.resolutionDate = new Date(
+            event.descriptionJSON.resolutionDate
+          );
+          eventDescriptions[identifiers.descriptionHash] = new models
+            .EventDescription(event, state);
 
 
-            // Check that descriptionHash = sha3(descriptionJSON)
-            // check descriptionJSON has needed fields title, description,
-            // resolutionDate, outcomes...
-            // check outcomeCount > 1
-            // check descriptionJSON properties types: resolutionDate, title,
-            // description...
-            let descriptionJSON = JSON.parse(event.descriptionJSON);
-            if (
-                identifiers.descriptionHash == event.descriptionHash &&
-                typeof descriptionJSON.title == "string" &&
-                typeof descriptionJSON.description == "string" &&
-                descriptionJSON.resolutionDate &&
-                (   (
-                      Array.isArray(descriptionJSON.outcomes) &&
-                      descriptionJSON.outcomes.length > 1
-                    ) ||
-                    (descriptionJSON.unit && descriptionJSON.decimals != undefined)
-                )
-            )
-            {
-              event.descriptionJSON = JSON.parse(event.descriptionJSON);
-              event.descriptionJSON.resolutionDate = new Date(
-                event.descriptionJSON.resolutionDate
-              );
-              eventDescriptions[identifiers.descriptionHash] = new models
-                .EventDescription(event, state);
+          for(let oracleAddress in event.offChainOracles){
+            // check feeSignatures, concatenation of
+            // sha3(descriptionHash+fee), recover oracle address
+            try{
+              let fee = event.offChainOracles[oracleAddress].fee;
+              let feeToken = fee.feeToken;
+              if(fee){
+                let v = new Buffer(new BigNumber(fee.v).toString(16), 'hex');
+                let r = new Buffer(
+                  hex.encode(new BigNumber(fee.r), 256).slice(2),
+                  'hex'
+                );
+                let s = new Buffer(
+                  hex.encode(new BigNumber(fee.s), 256).slice(2),
+                  'hex'
+                );
+                let feeHex = hex.encode(new BigNumber(fee.fee), 256);
+                let address = '0x' + signing.recoverAddress(
+                  identifiers.descriptionHash + feeHex.slice(2) + feeToken.slice(2),
+                  v,
+                  r,
+                  s
+                ).toString('hex');
 
-
-              for(let oracleAddress in event.offChainOracles){
-                // check feeSignatures, concatenation of
-                // sha3(descriptionHash+fee), recover oracle address
-                try{
-                  let fee = event.offChainOracles[oracleAddress].fee;
-                  if(fee){
-                    let v = new Buffer(new BigNumber(fee.v).toString(16), 'hex');
-                    let r = new Buffer(
-                      hex.encode(new BigNumber(fee.r), 256).slice(2),
-                      'hex'
-                    );
-                    let s = new Buffer(
-                      hex.encode(new BigNumber(fee.s), 256).slice(2),
-                      'hex'
-                    );
-
-                    let feeHex = hex.encode(new BigNumber(fee.fee), 256);
-                    let address = '0x' + signing.recoverAddress(
-                            identifiers.descriptionHash + feeHex.slice(2),
-                            v,
-                            r,
-                            s
-                        ).toString('hex');
-
-                    if(oracleAddress != address){
-                        event.offChainOracles[oracleAddress].fee = null;
-                    }
-                  }
-                }
-                catch(error){
-                    console.error(error);
+                if(oracleAddress != address){
                     event.offChainOracles[oracleAddress].fee = null;
-                }
-
-                // Check all revisions data
-                for(let i=0; i<event.offChainOracles[oracleAddress].revisions.length; i++){
-                  // Check revision signature
-                  let revision = event.offChainOracles[oracleAddress].revisions[i];
-                  try{
-                    let v = new Buffer(
-                      new BigNumber(revision.v).toString(16),
-                      'hex'
-                    );
-                    let r = new Buffer(
-                      hex.encode(new BigNumber(revision.r), 256).slice(2),
-                      'hex'
-                    );
-                    let s = new Buffer(
-                      hex.encode(new BigNumber(revision.s), 256).slice(2),
-                      'hex'
-                    );
-
-                    let msgRaw = new Buffer(
-                      revision.revisionJSON
-                    );
-                    // revisionSignature is the signature of descriptionHash
-                    let address = '0x' + signing.recoverAddress(
-                            msgRaw,
-                            v,
-                            r,
-                            s
-                        ).toString('hex');
-
-                    let revisionJSON = JSON.parse(revision.revisionJSON);
-
-                    let outcomesCount = 2;
-                    if(revisionJSON.outcomes){
-                        outcomesCount = revisionJSON.outcomes.length;
-                    }
-                    // Only if revision signature is correct we add it to the
-                    // revisions object map outcomeCount should be equal to
-                    // outcomes.length if discrete or 2 if ranged index of
-                    // revisions has to be incremental without jumps, are
-                    // order desc
-                    if(
-                        address == oracleAddress &&
-                        ((event.descriptionJSON.outcomes && outcomesCount == event.descriptionJSON.outcomes.length) ||
-                        (!event.descriptionJSON.outcomes && outcomesCount == 2)) &&
-                        revisionJSON.nonce == event.offChainOracles[oracleAddress].revisions.length - i - 1
-                    ){
-                        Object.assign(revision, JSON.parse(revision.revisionJSON));
-                    }
-                    else{
-                        revision = null;
-                    }
-                  }
-                  catch(error){
-                    console.error(error);
-                    revision = null;
-                  }
                 }
               }
             }
-          });
+            catch(error){
+                console.error(error);
+                event.offChainOracles[oracleAddress].fee = null;
+            }
 
-          //Copy new eventDescriptions to state
-          Object.assign(state.eventDescriptions, eventDescriptions);
+            // Check all revisions data
+            for(let i=0; i<event.offChainOracles[oracleAddress].revisions.length; i++){
+              // Check revision signature
+              let revision = event.offChainOracles[oracleAddress].revisions[i];
+              try{
+                let v = new Buffer(
+                  new BigNumber(revision.v).toString(16),
+                  'hex'
+                );
+                let r = new Buffer(
+                  hex.encode(new BigNumber(revision.r), 256).slice(2),
+                  'hex'
+                );
+                let s = new Buffer(
+                  hex.encode(new BigNumber(revision.s), 256).slice(2),
+                  'hex'
+                );
 
-          resolve(eventDescriptions);
+                let msgRaw = new Buffer(
+                  revision.revisionJSON
+                );
+                // revisionSignature is the signature of descriptionHash
+                let address = '0x' + signing.recoverAddress(
+                        msgRaw,
+                        v,
+                        r,
+                        s
+                    ).toString('hex');
 
-        });
+                let revisionJSON = JSON.parse(revision.revisionJSON);
+
+                let outcomesCount = 2;
+                if(revisionJSON.outcomes){
+                    outcomesCount = revisionJSON.outcomes.length;
+                }
+                // Only if revision signature is correct we add it to the
+                // revisions object map outcomeCount should be equal to
+                // outcomes.length if discrete or 2 if ranged index of
+                // revisions has to be incremental without jumps, are
+                // order desc
+                if(
+                    address == oracleAddress &&
+                    ((event.descriptionJSON.outcomes && outcomesCount == event.descriptionJSON.outcomes.length) ||
+                    (!event.descriptionJSON.outcomes && outcomesCount == 2)) &&
+                    revisionJSON.nonce == event.offChainOracles[oracleAddress].revisions.length - i - 1
+                ){
+                    Object.assign(revision, JSON.parse(revision.revisionJSON));
+                }
+                else{
+                    revision = null;
+                }
+              }
+              catch(error){
+                console.error(error);
+                revision = null;
+              }
+            }
+          }
+        }
+      });
+
+      //Copy new eventDescriptions to state
+      Object.assign(state.eventDescriptions, eventDescriptions);
+
+      resolve(eventDescriptions);
+
     });
+  });
 }
 
-export function updateEvents(config, resolverAddress, tokenAddress,
-  creatorAddress, filteredEventHashes) {
+export function updateEvents(config, creators, resolverAddress, tokenAddress,
+  filteredEventHashes) {
   return new Promise((resolve, reject) => {
     // If eventHashes passed, get all Description Hashes related
     if (filteredEventHashes) {
@@ -276,7 +278,7 @@ export function updateEvents(config, resolverAddress, tokenAddress,
     // If not, get all Description Hashes
     else {
       let descriptionHashes = Object.keys(state.eventDescriptions);
-      eventToken.getEventHashesProcessed(descriptionHashes, config)
+      eventFactory.getEventHashesProcessed(descriptionHashes, creators, config)
       .then((eventHashes) => {
           resolve(eventHashes);
       })
@@ -284,8 +286,8 @@ export function updateEvents(config, resolverAddress, tokenAddress,
   }).then((eventHashes) => {
     return new Promise((resolve, reject) => {
       // get events from blockchain
-      eventToken.getEventsProcessed(eventHashes, resolverAddress,
-        tokenAddress, creatorAddress, config)
+      eventFactory.getEventsProcessed(eventHashes, resolverAddress,
+        tokenAddress, config)
         .then((events) => {
           // console.log("descriptions", state.eventDescriptions);
           // console.log("events", events, eventHashes, resolverAddress);
@@ -343,7 +345,7 @@ export function updateEvents(config, resolverAddress, tokenAddress,
   });
 }
 
-export function updateMarkets(config, marketContractAddress, investorAddress,
+export function updateMarkets(config, investors, marketContractAddress,
   filteredMarketHashes) {
     return new Promise((resolve, reject) => {
         if(filteredMarketHashes){
@@ -351,8 +353,9 @@ export function updateMarkets(config, marketContractAddress, investorAddress,
         }
         // If no eventHashes are passed to the function, will get all eventHashes on state
         else{
-            market.getMarketHashesProcessed(
+            marketFactory.getMarketHashesProcessed(
               Object.keys(state.events),
+              investors,
               config,
               marketContractAddress
             )
@@ -362,7 +365,7 @@ export function updateMarkets(config, marketContractAddress, investorAddress,
         }
     }).then((marketHashes) => {
         return new Promise((resolve, reject) => {
-            market.getMarketsProcessed(marketHashes, config, investorAddress,
+            marketFactory.getMarketsProcessed(marketHashes, config,
               marketContractAddress)
                 .then((markets) => {
                     // console.log("markets", markets);
@@ -504,7 +507,7 @@ export function updateTokens(tokenAddresses, config) {
 export function updateEventTokenShares(forAddress, eventHashes, config){
     return new Promise((resolve, reject) => {
         // Get shares for on event token contract
-        eventToken.getSharesProcessed(forAddress, eventHashes, config)
+        eventFactory.getSharesProcessed(forAddress, eventHashes, config)
             .then((shares) => {
 
                 //remove the old entries, otherwise removed shares will be left in state.
@@ -538,7 +541,7 @@ export function updateBlocknumber(config) {
 export function getSample(marketAddress, marketHash, blockNumber, config) {
     const sharesPromise = new Promise((resolve, reject) => {
         config.batch.add(
-                market.getShareDistributionWithTimestamp(
+                marketFactory.getShareDistributionWithTimestamp(
                 marketHash,
                 blockNumber,
                 config,
@@ -617,34 +620,42 @@ export function updateHistory(marketAddress, marketHash, fromBlock, toBlock, sam
     return Promise.all(samplePromises);
 }
 
-export function updateBaseFee(config){
-    return new Promise((resolve, reject) => {
-        eventToken.getBaseFee(config, promiseCallback(resolve, reject)).call();
-    });
-}
+// export function updateBaseFee(config){
+//     return new Promise((resolve, reject) => {
+//         eventFactory.getBaseFee(config, promiseCallback(resolve, reject)).call();
+//     });
+// }
 
-export function buildState(config, tokenAddresses, marketAddresses) {
+export function buildState(config, creators, investors, tokenAddresses, marketAddresses) {
     if(!tokenAddresses){
         tokenAddresses = [config.addresses.etherToken];
     }
 
     if(!marketAddresses){
-        marketAddresses = [config.addresses.defaultMarket];
+        marketAddresses = [config.addresses.defaultMarketFactory];
+    }
+
+    if(!creators){
+      creators = [config.account];
+    }
+
+    if(!investors){
+      investors = [config.account];
     }
 
     return co(function*() {
         let eventDescriptions = yield updateEventDescriptions(config);
-        let events = yield updateEvents(config, config.addressFilters.oracle);
+        let events = yield updateEvents(config, creators, config.addressFilters.oracle);
         let parallelUpdates = [
             updateTokens(tokenAddresses, config),
             updateEventTokenShares(config.account, Object.keys(state.events), config),
-            updateBlocknumber(config),
-            updateBaseFee(config),
+            updateBlocknumber(config)
+            // updateBaseFee(config),
         ];
 
         // Add market updates to parallelUpdates array
         marketAddresses.map((marketAddress) => {
-            parallelUpdates.push(updateMarkets(config, marketAddress, config.addressFilters.investor));
+            parallelUpdates.push(updateMarkets(config, investors, marketAddress));
         });
 
         if(Array.isArray(config.additionalUpdates)) {
@@ -655,57 +666,6 @@ export function buildState(config, tokenAddresses, marketAddresses) {
         yield parallelUpdates;
         state.transactions = loadTransactions(config);
         state.config = config;
-
-        return state;
-    });
-}
-
-export function updateState(config, filteredMarketHashes, tokenAddresses,
-  marketAddresses) {
-
-    if(!tokenAddresses){
-        tokenAddresses = [
-          0,
-          config.addresses.defaultMarket,
-          config.addresses.eventToken
-        ];
-    }
-
-    if(!marketAddresses){
-        marketAddresses = [config.addresses.defaultMarket];
-    }
-
-    return co(function*() {
-        let parallelUpdates = [
-            updateTokens(tokenAddresses, config),
-            updateEventTokenShares(
-              config.account,
-              Object.keys(state.events),
-              config
-            ),
-            updateBlocknumber(config),
-            updateBaseFee(config),
-        ];
-
-        // Add market updates to parallelUpdates array
-        marketAddresses.map((marketAddress) => {
-            parallelUpdates.push(
-              updateMarkets(
-                config,
-                marketAddress,
-                config.addressFilters.investor,
-                filteredMarketHashes
-              )
-            );
-        });
-
-        if(Array.isArray(config.additionalUpdates)) {
-            config.additionalUpdates.forEach((item) => {
-                parallelUpdates.push(item());
-            });
-        }
-
-        yield parallelUpdates;
 
         return state;
     });

@@ -10,7 +10,7 @@ import * as hex from '../lib/hex';
 import * as constants from '../constants';
 import {get} from '../state';
 import BigNumber from 'bignumber.js';
-import {getEvent, ensurePermanentApproval} from './events';
+import {getEvent, ensurePermanentApproval} from './event-factory';
 import co from 'co';
 
 /**
@@ -27,9 +27,9 @@ export function createMarket(market, eventHash, config, ...args) {
     marketAddress = args.pop();
 
     if(!marketAddress){
-        marketAddress = config.addresses.defaultMarket;
+        marketAddress = config.addresses.defaultMarketFactory;
     }
-    const contractInstance = config.web3.eth.contract(abi.market).at(marketAddress);
+    const contractInstance = config.web3.eth.contract(abi.marketFactory).at(marketAddress);
 
     const transactionArgs = [
         eventHash,
@@ -64,9 +64,9 @@ export function closeMarket(marketHash, config, ...args) {
     marketAddress = args.pop();
 
     if(!marketAddress){
-        marketAddress = config.addresses.defaultMarket;
+        marketAddress = config.addresses.defaultMarketFactory;
     }
-    const contractInstance = config.web3.eth.contract(abi.market).at(marketAddress);
+    const contractInstance = config.web3.eth.contract(abi.marketFactory).at(marketAddress);
     const transactionArgs = [
         marketHash,
         txDefaults(config),
@@ -90,27 +90,28 @@ export function closeMarket(marketHash, config, ...args) {
  * @param callback
  * @returns {Promise|Promise<T>}
  */
-export function getMarketHashes(eventHashes, config, ...args) {
+export function getMarketHashes(eventHashes, investors, config, ...args) {
     const callback = args.pop();
     let marketAddress = args.pop();
 
     if(!marketAddress){
-        marketAddress = config.addresses.defaultMarket;
+        marketAddress = config.addresses.defaultMarketFactory;
     }
-    const contractInstance = config.web3.eth.contract(abi.market).at(marketAddress);
+    const contractInstance = config.web3.eth.contract(abi.marketFactory).at(marketAddress);
     return requestWithBlockNumber(
         contractInstance.getMarketHashes,
         eventHashes,
+        investors,
         'latest',
         callback);
 }
 
-export function getMarketHashesProcessed(eventHashes, config, marketAddress) {
+export function getMarketHashesProcessed(eventHashes, investors, config, marketAddress) {
     if(!marketAddress){
-        marketAddress = config.addresses.defaultMarket;
+        marketAddress = config.addresses.defaultMarketFactory;
     }
     return new Promise((resolve, reject) => {
-        getMarketHashes(eventHashes, config, marketAddress, promiseCallback(resolve, reject)).call();
+        getMarketHashes(eventHashes, investors, config, marketAddress, promiseCallback(resolve, reject)).call();
     })
     .then((marketHashesResponse) => {
         return new Promise((resolve, reject) => {
@@ -147,9 +148,9 @@ export function getMarket(marketHash, config, ...args) {
     let marketAddress = args.pop();
 
     if(!marketAddress){
-        marketAddress = config.addresses.defaultMarket;
+        marketAddress = config.addresses.defaultMarketFactory;
     }
-    const contractInstance = config.web3.eth.contract(abi.market).at(marketAddress);
+    const contractInstance = config.web3.eth.contract(abi.marketFactory).at(marketAddress);
     return requestWithBlockNumber(
         contractInstance.getMarket,
         marketHash,
@@ -163,13 +164,13 @@ export function getMarkets(marketHashes, config, ...args) {
     let investorAddress = args.pop();
 
     if(!marketAddress){
-        marketAddress = config.addresses.defaultMarket;
+        marketAddress = config.addresses.defaultMarketFactory;
     }
     if(!investorAddress){
         investorAddress = config.addressFilters.investor;
     }
 
-    const contractInstance = config.web3.eth.contract(abi.market).at(marketAddress);
+    const contractInstance = config.web3.eth.contract(abi.marketFactory).at(marketAddress);
     return requestWithBlockNumber(
         contractInstance.getMarkets,
         marketHashes,
@@ -183,7 +184,7 @@ export function getMarketsProcessed(marketHashes, config, ...args) {
     let investorAddress = args.pop();
 
     if(!marketAddress){
-        marketAddress = config.addresses.defaultMarket;
+        marketAddress = config.addresses.defaultMarketFactory;
     }
     if(!investorAddress){
         investorAddress = config.addressFilters.investor;
@@ -232,9 +233,9 @@ export function withdrawFees(marketHash, config, ...args) {
     marketAddress = args.pop();
 
     if(!marketAddress){
-        marketAddress = config.addresses.defaultMarket;
+        marketAddress = config.addresses.defaultMarketFactory;
     }
-    const contractInstance = config.web3.eth.contract(abi.market).at(marketAddress);
+    const contractInstance = config.web3.eth.contract(abi.marketFactory).at(marketAddress);
     const transactionArgs = [
         marketHash,
         txDefaults(config),
@@ -255,9 +256,9 @@ export function getShareDistribution(marketHash, blockNumber, config, ...args) {
     let marketAddress = args.pop();
 
     if(!marketAddress){
-        marketAddress = config.addresses.defaultMarket;
+        marketAddress = config.addresses.defaultMarketFactory;
     }
-    const contractInstance = config.web3.eth.contract(abi.market).at(marketAddress);
+    const contractInstance = config.web3.eth.contract(abi.marketFactory).at(marketAddress);
     return requestWithBlockNumber(
         contractInstance.getShareDistribution,
         marketHash,
@@ -270,9 +271,9 @@ export function getShareDistributionWithTimestamp(marketHash, blockNumber, confi
     let marketAddress = args.pop();
 
     if(!marketAddress){
-        marketAddress = config.addresses.defaultMarket;
+        marketAddress = config.addresses.defaultMarketFactory;
     }
-    const contractInstance = config.web3.eth.contract(abi.market).at(marketAddress);
+    const contractInstance = config.web3.eth.contract(abi.marketFactory).at(marketAddress);
     return requestWithBlockNumber(
         contractInstance.getShareDistributionWithTimestamp,
         marketHash,
@@ -299,9 +300,9 @@ export function buyShares(marketHash, outcomeIndex, numShares, maxTotalPrice, co
     marketAddress = args.pop();
 
     if(!marketAddress){
-        marketAddress = config.addresses.defaultMarket;
+        marketAddress = config.addresses.defaultMarketFactory;
     }
-    const contractInstance = config.web3.eth.contract(abi.market).at(marketAddress);
+    const contractInstance = config.web3.eth.contract(abi.marketFactory).at(marketAddress);
 
     const transactionArgs = [
         marketHash,
@@ -334,9 +335,9 @@ export function sellShares(marketHash, outcomeIndex, numShares, minTotalPrice, c
     marketAddress = args.pop();
 
     if(!marketAddress){
-        marketAddress = config.addresses.defaultMarket;
+        marketAddress = config.addresses.defaultMarketFactory;
     }
-    const contractInstance = config.web3.eth.contract(abi.market).at(marketAddress);
+    const contractInstance = config.web3.eth.contract(abi.marketFactory).at(marketAddress);
 
     const txArgs = [
         marketHash,
@@ -344,7 +345,7 @@ export function sellShares(marketHash, outcomeIndex, numShares, minTotalPrice, c
         numShares,
         minTotalPrice,
         txDefaults(config)
-    ];    
+    ];
 
     return callAndSendTransaction(
         contractInstance.sellShares,
@@ -358,7 +359,7 @@ export function sellShares(marketHash, outcomeIndex, numShares, minTotalPrice, c
 
 export function calcMarketFee(marketHash, amount, config, marketAddress) {
     if(!marketAddress){
-        marketAddress = config.addresses.defaultMarket;
+        marketAddress = config.addresses.defaultMarketFactory;
     }
     let markets = get(config).markets;
 
@@ -385,9 +386,9 @@ export function shortSellShares(marketHash, outcomeIndex, numberOfShares, moneyT
     marketAddress = args.pop();
 
     if(!marketAddress){
-        marketAddress = config.addresses.defaultMarket;
+        marketAddress = config.addresses.defaultMarketFactory;
     }
-    const contractInstance = config.web3.eth.contract(abi.market).at(marketAddress);
+    const contractInstance = config.web3.eth.contract(abi.marketFactory).at(marketAddress);
     const transactionArgs = [
         marketHash,
         outcomeIndex,

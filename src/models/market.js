@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
-import * as marketMaker from '../contracts/abstract-market-maker';
-import * as marketContract from '../contracts/abstract-market';
+import * as marketMaker from '../contracts/market-maker';
+import * as marketFactory from '../contracts/market-factory';
 import {updateMarkets} from '../state';
 class Market {
 	constructor(props, state, marketAddress) {
@@ -115,7 +115,7 @@ class Market {
 	// market contract wrapper functions
 
 	buyShares(outcomeIndex, numShares, maxTotalPrice, callback){
-		return marketContract.buyShares(
+		return marketFactory.buyShares(
 			this.marketHash,
 			outcomeIndex,
 			numShares,
@@ -127,7 +127,7 @@ class Market {
 	}
 
 	sellShares(outcomeIndex, numShares, minTotalPrice, callback){
-		return marketContract.sellShares(
+		return marketFactory.sellShares(
 			this.marketHash,
 			outcomeIndex,
 			numShares,
@@ -139,7 +139,7 @@ class Market {
 	}
 
 	withdrawFees(callback){
-		return marketContract.withdrawFees(
+		return marketFactory.withdrawFees(
 			this.marketHash,
 			this.state.config,
 			this.marketAddress,
@@ -148,7 +148,7 @@ class Market {
 	}
 
 	shortSellShares(outcomeIndex, numShares, moneyToEarn, callback){
-		return marketContract.shortSellShares(
+		return marketFactory.shortSellShares(
 			this.marketHash,
 			outcomeIndex,
 			numShares,
@@ -162,8 +162,8 @@ class Market {
 	update(){
 		return updateMarkets(
 			this.state.config,
-			this.makerAddress,
-			this.investorAddress,
+			[this.investorAddress],
+			this.marketAddress,
 			[this.marketHash]
 		)
 	}

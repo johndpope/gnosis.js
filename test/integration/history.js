@@ -46,11 +46,11 @@ describe('prices history', function testSuite()
         );
       })
       .then((out) =>
-      {        
+      {
         gnosis.state.reset();
         return gnosis.state.buildState(config).then((state) => {
           marketHash = Object.keys(
-            state.markets[config.addresses.defaultMarket]
+            state.markets[config.addresses.defaultMarketFactory]
           )[0];
         });
       });
@@ -77,7 +77,7 @@ describe('prices history', function testSuite()
 
   it('get history', (done) => {
       return gnosis.state.updateHistory(
-          config.addresses.defaultMarket,
+          config.addresses.defaultMarketFactory,
           marketHash,
           0,
           15,

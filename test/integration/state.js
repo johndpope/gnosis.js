@@ -36,17 +36,20 @@ describe('state', function runTests(){
             // console.log(util.inspect(state, {showHidden: false, depth: null}));
             expect(state.eventDescriptions).to.be.a('object');
             expect(state).to.equal(gnosis.state.get(config));
+            // 1 event description created
             expect(Object.keys(state.eventDescriptions).length).to.equal(1);
+            // 1 event on chain
             expect(Object.keys(state.events).length).to.equal(1);
+            // 1 market
             expect(Object.keys(state.markets).length).to.equal(1);
-            expect(state.markets[config.addresses.defaultMarket]).to.be.a('object');
-            expect(state.markets[config.addresses.defaultMarket]).to.be.a('object');
-            let market = state.markets[config.addresses.defaultMarket][Object.keys(state.markets[config.addresses.defaultMarket])[0]];
+            expect(state.markets[config.addresses.defaultMarketFactory]).to.be.a('object');
+            let market = state.markets[config.addresses.defaultMarketFactory][Object.keys(state.markets[config.addresses.defaultMarketFactory])[0]];
             expect(market).to.be.a('object');
             let sharesAsBinaryOption = market.getShareDistributionAsBinaryOption(0);
             expect(sharesAsBinaryOption).to.be.a('array');
             expect(sharesAsBinaryOption[0].eq(sharesAsBinaryOption[1])).to.be.true;
-            expect(Object.keys(state.tokens).length).to.equal(4);
+            // 3 tokens: etherToken + 2 outcome token
+            expect(Object.keys(state.tokens).length).to.equal(3);
             let tokens = market.getEvent().tokens;
             expect(tokens.length).to.equal(2);
             expect(tokens[0]).to.be.a('string');
@@ -88,15 +91,15 @@ describe('state', function runTests(){
         });
     });
 
-    it('event wrapper function redeem all outcomes', () => {
+    it('event wrapper function sell all outcomes', () => {
         return gnosis.state.buildState(config).then((state) => {
             expect(state).to.be.a('object');
-            let event = state.events[Object.keys(state.events)];
+            let event = state.events[Object.keys(statew)];
             expect(event).to.be.a('object');
             return new Promise((resolve, reject) => {
-              gnosis.contracts.abstractToken.approve(
+              gnosis.contracts.token.approve(
                 event.tokenAddress,
-                config.addresses.events,
+                config.addresses.eventFactory,
                 new BigNumber('1e10'),
                 config,
                 promiseCallback(resolve, reject));
@@ -105,7 +108,7 @@ describe('state', function runTests(){
                 event.buyAllOutcomes(new BigNumber('1e10'), promiseCallback(resolve, reject));
               });
             }).then((receipt) => {
-                return event.redeemAllOutcomes(new BigNumber('1e10'));
+                return event.sellAllOutcomes(new BigNumber('1e10'));
             }).then((result) => {
                 expect(result.simulatedResult).to.be.true;
             });
@@ -121,9 +124,9 @@ describe('state', function runTests(){
             expect(event).to.be.a('object');
 
             return new Promise((resolve, reject) => {
-              gnosis.contracts.abstractToken.approve(
+              gnosis.contracts.token.approve(
                 event.tokenAddress,
-                config.addresses.events,
+                config.addresses.eventFactory,
                 new BigNumber('1e10'),
                 config,
                 promiseCallback(resolve, reject));
@@ -167,7 +170,7 @@ describe('state', function runTests(){
         {
             expect(state).to.be.a('object');
 
-            let markets = state.markets[config.addresses.defaultMarket];
+            let markets = state.markets[config.addresses.defaultMarketFactory];
             expect(markets).to.be.a('object');
             let marketHash = Object.keys(markets)[0];
             let market = markets[marketHash];
@@ -193,7 +196,7 @@ describe('state', function runTests(){
         {
             expect(state).to.be.a('object');
 
-            let markets = state.markets[config.addresses.defaultMarket];
+            let markets = state.markets[config.addresses.defaultMarketFactory];
             expect(markets).to.be.a('object');
             let marketHash = Object.keys(markets)[0];
             let market = markets[marketHash];
@@ -210,7 +213,15 @@ describe('state', function runTests(){
                 );
             }).then((earnings) => {
                 expect(earnings.greaterThan(0)).to.be.true;
-                return market.sellShares(new BigNumber('0'), shares[0].value, earnings);
+                return gnosis.contracts.token.approve(
+                  market.getEvent().tokens[0],
+                  market.marketAddress,
+                  shares[0].value,
+                  config
+                )
+                .then(function(result){
+                  return market.sellShares(new BigNumber('0'), shares[0].value, earnings);
+                });
             }).then((result) => {
                 expect(result.simulatedResult.greaterThan(0)).to.be.true;
             })
@@ -220,7 +231,7 @@ describe('state', function runTests(){
     it('market wrapper function shortSellShares and withdrawFees', () => {
         return gnosis.state.buildState(config).then((state) => {
             expect(state).to.be.a('object');
-            let markets = state.markets[config.addresses.defaultMarket];
+            let markets = state.markets[config.addresses.defaultMarketFactory];
             expect(markets).to.be.a('object');
             let marketHash = Object.keys(markets)[0];
             let market = markets[marketHash];
@@ -273,12 +284,12 @@ describe('state', function runTests(){
       return gnosis.state.buildState(config).then((state) => {
           expect(state).to.be.a('object');
           let marketHashes = Object.keys(
-            state.markets[config.addresses.defaultMarket]
+            state.markets[config.addresses.defaultMarketFactory]
           );
 
           expect(marketHashes).to.be.a('array');
           expect(marketHashes.length).to.equal(1);
-          let market = state.markets[config.addresses.defaultMarket][marketHashes[0]];
+          let market = state.markets[config.addresses.defaultMarketFactory][marketHashes[0]];
           expect(market).to.be.a('object');
           return market.update().then(() => {
 

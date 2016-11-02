@@ -79,7 +79,7 @@ var gnosis =
 
 	var marketMaker = _interopRequireWildcard(_marketMaker);
 
-	var _hunchGameApi = __webpack_require__(463);
+	var _hunchGameApi = __webpack_require__(464);
 
 	var hunchgame = _interopRequireWildcard(_hunchGameApi);
 
@@ -154,53 +154,34 @@ var gnosis =
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var defaultConfig = exports.defaultConfig = {
+	  // Mainnet
 	  addresses: {
-	    // optional: Allows to do market operations without passing the
-	    // market address
-	    defaultMarket: '0x3ddb5f64c40ea7fc7544246e9f372f74f9916b2b',
-
-	    // optional: Allows calculating of share prices without passing the
-	    // maker address
-	    defaultMarketMaker: '0xfaf8913492cef6e4a99904962703529b8f3ad781',
-
-	    // obligatory
-	    etherToken: '0x4955fd25df125d1abf23d45df1d094111f4b864e',
-
-	    // obligatory
-	    events: '0x631298cdbd72d1f2cb4b8e5120d3f8c41b8abe97',
-
-	    // optional
-	    ultimateOracle: '0x97ed93a5cebf62a7a48ebbbef7f16b87a80fee90',
-	    // optional
-	    lmsrMarketMaker: '0x3ddb5f64c40ea7fc7544246e9f372f74f9916b2b'
+	    defaultMarketFactory: '0x6ca7f214ab2ddbb9a8e1a1e2c8550e3164e9dba5',
+	    defaultMarketMaker: '0x8695e5e79dab06fbbb05f445316fa4edb0da30f0',
+	    etherToken: '0x92f1dbea03ce08225e31e95cc926ddbe0198e6f2',
+	    eventFactory: '0x5aae5c59d642e5fd45b427df6ed478b49d55fefd',
+	    ultimateOracle: '0x529c4cb814029b8bb32acb516ea3a4b07fdae350',
+	    lmsrMarketMaker: '0x8695e5e79dab06fbbb05f445316fa4edb0da30f0'
 	  },
-	  addressFiltersPostLoad: {
-	    marketMakers: ['0xfaf8913492cef6e4a99904962703529b8f3ad781'],
-	    oracles: ['0x97ed93a5cebf62a7a48ebbbef7f16b87a80fee90'],
-	    tokens: ['0x4955fd25df125d1abf23d45df1d094111f4b864e', '0xce2562752c3d635b94be9b18f2250ddc638aadca']
-	  },
-
 	  addressFilters: {
-	    // optional: Only loads events from blockchain, which are resolved by
-	    // given oracle
-	    oracle: '0x97ed93a5cebf62a7a48ebbbef7f16b87a80fee90',
-	    // optional: Only loads markets from blockchain, which are created by
-	    // given investor
-	    investor: null
+	    oracle: '0x529c4cb814029b8bb32acb516ea3a4b07fdae350'
 	  },
-
 	  eventDescriptionFilters: {
-	    // resolutionDate: new Date(new Date().getTime() + 3600000*24*60),
 	    oracleAddresses: null,
 	    includeWhitelistedOracles: false,
-	    pageSize: 50 // number of events returned by API for each page
+	    pageSize: 10
+	  },
+	  addressFiltersPostLoad: {
+	    marketMakers: ['0x8695e5e79dab06fbbb05f445316fa4edb0da30f0'],
+	    oracles: ['0x529c4cb814029b8bb32acb516ea3a4b07fdae350'],
+	    tokens: ['0x92f1dbea03ce08225e31e95cc926ddbe0198e6f2']
 	  },
 
 	  defaultGas: 3000000,
 	  defaultGasPrice: new _bignumber2.default('5e10'), // 50 gwei
 
-	  gnosisServiceURL: 'http://localhost:8050/api/',
-	  ethereumNodeURL: 'http://127.0.0.1:8545',
+	  gnosisServiceURL: 'https://www.gnosis.pm/api/',
+	  ethereumNodeURL: 'https://mainnet.infura.io/',
 
 	  persistTransactions: false,
 	  transactionConfirmCallback: null,
@@ -289,7 +270,7 @@ var gnosis =
 
 	        if (transaction.receipt == null) {
 	          batch.add(config.web3.eth.getTransactionReceipt.request(key, function (e, receipt) {
-	            if (e == null && receipt && state.get(config).transactions && state.get(config).transactions[key].receipt == null) {
+	            if (e == null && receipt && state.get(config).transactions && state.get(config).transactions[key] && state.get(config).transactions[key].receipt == null) {
 	              var transactionCallback = transaction.callback;
 	              var newTransaction = {};
 	              newTransaction[key] = {
@@ -305,7 +286,7 @@ var gnosis =
 	                transactionCallback(e, receipt);
 	              }
 
-	              //call config transaction callback
+	              // call config transaction callback
 	              if (config.transactionConfirmCallback) {
 	                config.transactionConfirmCallback(e, receipt);
 	              }
@@ -45898,13 +45879,14 @@ var gnosis =
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	var token = exports.token = [{ "inputs": [], "constant": true, "type": "function", "name": "name", "outputs": [{ "type": "string", "name": "" }] }, { "inputs": [{ "type": "address", "name": "spender" }, { "type": "uint256", "name": "value" }], "constant": false, "type": "function", "name": "approve", "outputs": [{ "type": "bool", "name": "success" }] }, { "inputs": [], "constant": true, "type": "function", "name": "totalSupply", "outputs": [{ "type": "uint256", "name": "supply" }] }, { "inputs": [{ "type": "address", "name": "from" }, { "type": "address", "name": "to" }, { "type": "uint256", "name": "value" }], "constant": false, "type": "function", "name": "transferFrom", "outputs": [{ "type": "bool", "name": "success" }] }, { "inputs": [], "constant": true, "type": "function", "name": "decimals", "outputs": [{ "type": "uint8", "name": "" }] }, { "inputs": [{ "type": "address", "name": "owner" }], "constant": true, "type": "function", "name": "balanceOf", "outputs": [{ "type": "uint256", "name": "balance" }] }, { "inputs": [], "constant": true, "type": "function", "name": "symbol", "outputs": [{ "type": "string", "name": "" }] }, { "inputs": [{ "type": "address", "name": "to" }, { "type": "uint256", "name": "value" }], "constant": false, "type": "function", "name": "transfer", "outputs": [{ "type": "bool", "name": "success" }] }, { "inputs": [{ "type": "address", "name": "owner" }, { "type": "address", "name": "spender" }], "constant": true, "type": "function", "name": "allowance", "outputs": [{ "type": "uint256", "name": "remaining" }] }, { "inputs": [{ "indexed": true, "type": "address", "name": "from" }, { "indexed": true, "type": "address", "name": "to" }, { "indexed": false, "type": "uint256", "name": "value" }], "type": "event", "name": "Transfer", "anonymous": false }, { "inputs": [{ "indexed": true, "type": "address", "name": "owner" }, { "indexed": true, "type": "address", "name": "spender" }, { "indexed": false, "type": "uint256", "name": "value" }], "type": "event", "name": "Approval", "anonymous": false }];
-	var oracle = exports.oracle = [{ "inputs": [{ "type": "bytes32", "name": "eventIdentifier" }], "constant": true, "type": "function", "name": "getEventData", "outputs": [{ "type": "bytes32[]", "name": "data" }] }, { "inputs": [{ "type": "bytes32", "name": "eventIdentifier" }], "constant": true, "type": "function", "name": "isOutcomeSet", "outputs": [{ "type": "bool", "name": "isSet" }] }, { "inputs": [{ "type": "bytes32", "name": "eventIdentifier" }], "constant": true, "type": "function", "name": "getOutcome", "outputs": [{ "type": "int256", "name": "outcome" }] }, { "inputs": [{ "type": "bytes32[]", "name": "data" }], "constant": false, "type": "function", "name": "registerEvent", "outputs": [{ "type": "bytes32", "name": "eventIdentifier" }] }, { "inputs": [{ "type": "bytes32[]", "name": "data" }], "constant": false, "type": "function", "name": "getFee", "outputs": [{ "type": "uint256", "name": "fee" }, { "type": "address", "name": "token" }] }];
-	var marketMaker = exports.marketMaker = [{ "inputs": [{ "type": "bytes32", "name": "marketHash" }, { "type": "uint256", "name": "initialFunding" }, { "type": "uint256[]", "name": "shareDistribution" }, { "type": "uint8", "name": "outcomeIndex" }, { "type": "uint256", "name": "shareCount" }], "constant": true, "type": "function", "name": "calcCostsBuying", "outputs": [{ "type": "uint256", "name": "" }] }, { "inputs": [{ "type": "bytes32", "name": "marketHash" }, { "type": "uint256", "name": "initialFunding" }, { "type": "uint256[]", "name": "shareDistribution" }, { "type": "uint8", "name": "outcomeIndex" }, { "type": "uint256", "name": "shareCount" }], "constant": true, "type": "function", "name": "calcEarningsSelling", "outputs": [{ "type": "uint256", "name": "" }] }];
-	var market = exports.market = [{ "inputs": [{ "type": "bytes32", "name": "marketHash" }], "constant": false, "type": "function", "name": "closeMarket", "outputs": [{ "type": "bool", "name": "" }] }, { "inputs": [{ "type": "bytes32", "name": "marketHash" }, { "type": "uint8", "name": "outcomeIndex" }, { "type": "uint256", "name": "shareCount" }, { "type": "uint256", "name": "expectedEarnings" }], "constant": false, "type": "function", "name": "shortSellShares", "outputs": [{ "type": "uint256", "name": "" }] }, { "inputs": [{ "type": "bytes32[]", "name": "marketHashes" }, { "type": "address", "name": "investorAddress" }], "constant": true, "type": "function", "name": "getMarkets", "outputs": [{ "type": "uint256[]", "name": "" }] }, { "inputs": [{ "type": "bytes32[]", "name": "eventHashes" }], "constant": true, "type": "function", "name": "getMarketHashes", "outputs": [{ "type": "uint256[]", "name": "" }] }, { "inputs": [{ "type": "bytes32", "name": "marketHash" }, { "type": "uint256", "name": "tokenCount" }], "constant": true, "type": "function", "name": "calcMarketFee", "outputs": [{ "type": "uint256", "name": "" }] }, { "inputs": [{ "type": "bytes32", "name": "marketHash" }], "constant": true, "type": "function", "name": "getShareDistribution", "outputs": [{ "type": "uint256[256]", "name": "" }] }, { "inputs": [{ "type": "bytes32", "name": "marketHash" }], "constant": true, "type": "function", "name": "getShareDistributionWithTimestamp", "outputs": [{ "type": "uint256[]", "name": "" }] }, { "inputs": [{ "type": "bytes32", "name": "marketHash" }, { "type": "uint8", "name": "outcomeIndex" }, { "type": "uint256", "name": "shareCount" }, { "type": "uint256", "name": "maxSpending" }], "constant": false, "type": "function", "name": "buyShares", "outputs": [{ "type": "uint256", "name": "" }] }, { "inputs": [{ "type": "bytes32", "name": "eventHash" }, { "type": "uint256", "name": "fee" }, { "type": "uint256", "name": "initialFunding" }, { "type": "address", "name": "marketMakerAddress" }], "constant": false, "type": "function", "name": "createMarket", "outputs": [{ "type": "bytes32", "name": "" }] }, { "inputs": [{ "type": "bytes32", "name": "marketHash" }], "constant": true, "type": "function", "name": "getMarket", "outputs": [{ "type": "bytes32", "name": "eventHash" }, { "type": "uint256", "name": "fee" }, { "type": "uint256", "name": "collectedFees" }, { "type": "uint256", "name": "initialFunding" }, { "type": "address", "name": "investorAddress" }, { "type": "address", "name": "marketMaker" }, { "type": "uint256", "name": "createdAtBlock" }] }, { "inputs": [{ "type": "bytes32", "name": "marketHash" }, { "type": "uint8", "name": "outcomeIndex" }, { "type": "uint256", "name": "shareCount" }, { "type": "uint256", "name": "expectedEarnings" }], "constant": false, "type": "function", "name": "sellShares", "outputs": [{ "type": "uint256", "name": "" }] }, { "inputs": [], "constant": true, "type": "function", "name": "getMinFunding", "outputs": [{ "type": "uint256", "name": "" }] }, { "inputs": [{ "type": "bytes32", "name": "marketHash" }], "constant": false, "type": "function", "name": "withdrawFees", "outputs": [{ "type": "uint256", "name": "" }] }];
-	var ultimateOracle = exports.ultimateOracle = [{ "inputs": [{ "type": "bytes32", "name": "eventIdentifier" }], "constant": true, "type": "function", "name": "getEventData", "outputs": [{ "type": "bytes32[]", "name": "data" }] }, { "inputs": [{ "type": "bytes32", "name": "" }], "constant": true, "type": "function", "name": "descriptionHashes", "outputs": [{ "type": "bytes32", "name": "" }] }, { "inputs": [{ "type": "address", "name": "" }, { "type": "bytes32", "name": "" }, { "type": "int256", "name": "" }], "constant": true, "type": "function", "name": "shares", "outputs": [{ "type": "uint256", "name": "" }] }, { "inputs": [{ "type": "bytes32", "name": "" }, { "type": "address", "name": "" }], "constant": true, "type": "function", "name": "oracleOutcomes", "outputs": [{ "type": "uint256", "name": "submissionAtTimestamp" }, { "type": "int256", "name": "outcome" }] }, { "inputs": [{ "type": "bytes32", "name": "eventIdentifier" }], "constant": true, "type": "function", "name": "isOutcomeSet", "outputs": [{ "type": "bool", "name": "" }] }, { "inputs": [{ "type": "bytes32", "name": "eventIdentifier" }], "constant": true, "type": "function", "name": "getOutcome", "outputs": [{ "type": "int256", "name": "" }] }, { "inputs": [{ "type": "bytes32[]", "name": "descriptionHashes" }, { "type": "address[]", "name": "oracleAddresses" }], "constant": true, "type": "function", "name": "getOracleOutcomes", "outputs": [{ "type": "uint256[]", "name": "" }] }, { "inputs": [{ "type": "bytes32", "name": "descriptionHash" }, { "type": "uint16", "name": "outcome" }], "constant": false, "type": "function", "name": "challengeWinningOutcome", "outputs": [{ "type": "bool", "name": "" }] }, { "inputs": [{ "type": "bytes32", "name": "descriptionHash" }, { "type": "uint16", "name": "outcome" }], "constant": false, "type": "function", "name": "voteForUltimateOutcome", "outputs": [{ "type": "bool", "name": "" }] }, { "inputs": [{ "type": "bytes32", "name": "descriptionHash" }], "constant": false, "type": "function", "name": "setUltimateOutcome", "outputs": [{ "type": "bool", "name": "" }] }, { "inputs": [{ "type": "bytes32", "name": "descriptionHash" }], "constant": false, "type": "function", "name": "withdraw", "outputs": [{ "type": "bool", "name": "" }] }, { "inputs": [{ "type": "address", "name": "forAddress" }, { "type": "bytes32[]", "name": "descriptionHashes" }, { "type": "int256[]", "name": "outcomes" }], "constant": true, "type": "function", "name": "getShares", "outputs": [{ "type": "uint256[]", "name": "" }] }, { "inputs": [{ "type": "bytes32[]", "name": "descriptionHashes" }], "constant": true, "type": "function", "name": "getUltimateOutcomes", "outputs": [{ "type": "uint256[]", "name": "" }] }, { "inputs": [{ "type": "bytes32[]", "name": "data" }], "constant": false, "type": "function", "name": "registerEvent", "outputs": [{ "type": "bytes32", "name": "" }] }, { "inputs": [{ "type": "bytes32", "name": "" }], "constant": true, "type": "function", "name": "ultimateOutcomes", "outputs": [{ "type": "bool", "name": "isFinal" }, { "type": "int256", "name": "finalOutcome" }, { "type": "int256", "name": "frontRunnerOutcome" }, { "type": "uint256", "name": "closingAtTimestamp" }, { "type": "uint256", "name": "totalAmount" }] }, { "inputs": [{ "type": "bytes32", "name": "eventIdentifier" }, { "type": "bytes32[]", "name": "data" }], "constant": false, "type": "function", "name": "setOutcome", "outputs": [{ "type": "bool", "name": "" }] }, { "inputs": [{ "type": "bytes32[]", "name": "data" }], "constant": false, "type": "function", "name": "getFee", "outputs": [{ "type": "uint256", "name": "fee" }, { "type": "address", "name": "token" }] }, { "inputs": [{ "type": "bytes32", "name": "" }, { "type": "uint256", "name": "" }], "constant": true, "type": "function", "name": "eventOracles", "outputs": [{ "type": "address", "name": "" }] }];
-	var hunchGameToken = exports.hunchGameToken = [{ "inputs": [{ "type": "bytes32", "name": "marketHash" }], "constant": false, "type": "function", "name": "closeMarket", "outputs": [{ "type": "bool", "name": "" }] }, { "inputs": [], "constant": true, "type": "function", "name": "name", "outputs": [{ "type": "string", "name": "" }] }, { "inputs": [{ "type": "address", "name": "_spender" }, { "type": "uint256", "name": "_value" }], "constant": false, "type": "function", "name": "approve", "outputs": [{ "type": "bool", "name": "success" }] }, { "inputs": [{ "type": "bytes32", "name": "marketHash" }, { "type": "uint8", "name": "outcomeIndex" }, { "type": "uint256", "name": "shareCount" }, { "type": "uint256", "name": "expectedEarnings" }], "constant": false, "type": "function", "name": "shortSellShares", "outputs": [{ "type": "uint256", "name": "" }] }, { "inputs": [], "constant": true, "type": "function", "name": "totalSupply", "outputs": [{ "type": "uint256", "name": "" }] }, { "inputs": [{ "type": "address", "name": "_from" }, { "type": "address", "name": "_to" }, { "type": "uint256", "name": "_value" }], "constant": false, "type": "function", "name": "transferFrom", "outputs": [{ "type": "bool", "name": "success" }] }, { "inputs": [{ "type": "address", "name": "userAddress" }], "constant": false, "type": "function", "name": "userLevel", "outputs": [{ "type": "uint256", "name": "" }] }, { "inputs": [], "constant": true, "type": "function", "name": "decimals", "outputs": [{ "type": "uint8", "name": "" }] }, { "inputs": [{ "type": "bytes32[]", "name": "marketHashes" }, { "type": "address", "name": "investorAddress" }], "constant": true, "type": "function", "name": "getMarkets", "outputs": [{ "type": "uint256[]", "name": "" }] }, { "inputs": [{ "type": "bytes32[]", "name": "eventHashes" }], "constant": true, "type": "function", "name": "getMarketHashes", "outputs": [{ "type": "uint256[]", "name": "" }] }, { "inputs": [{ "type": "bytes32", "name": "marketHash" }, { "type": "uint256", "name": "tokenCount" }], "constant": true, "type": "function", "name": "calcMarketFee", "outputs": [{ "type": "uint256", "name": "" }] }, { "inputs": [{ "type": "address", "name": "_owner" }], "constant": true, "type": "function", "name": "balanceOf", "outputs": [{ "type": "uint256", "name": "balance" }] }, { "inputs": [], "constant": false, "type": "function", "name": "buyCredits", "outputs": [{ "type": "bool", "name": "" }] }, { "inputs": [{ "type": "bytes32", "name": "marketHash" }], "constant": true, "type": "function", "name": "getShareDistribution", "outputs": [{ "type": "uint256[256]", "name": "" }] }, { "inputs": [], "constant": false, "type": "function", "name": "addCredit", "outputs": [{ "type": "bool", "name": "" }] }, { "inputs": [], "constant": true, "type": "function", "name": "symbol", "outputs": [{ "type": "string", "name": "" }] }, { "inputs": [{ "type": "bytes32", "name": "marketHash" }], "constant": true, "type": "function", "name": "getShareDistributionWithTimestamp", "outputs": [{ "type": "uint256[]", "name": "" }] }, { "inputs": [{ "type": "bytes32", "name": "eventHash" }], "constant": false, "type": "function", "name": "redeemWinnings", "outputs": [{ "type": "uint256", "name": "" }] }, { "inputs": [{ "type": "address", "name": "newOwner" }], "constant": false, "type": "function", "name": "changeOwner", "outputs": [{ "type": "bool", "name": "" }] }, { "inputs": [{ "type": "address", "name": "_to" }, { "type": "uint256", "name": "_value" }], "constant": false, "type": "function", "name": "transfer", "outputs": [{ "type": "bool", "name": "success" }] }, { "inputs": [{ "type": "address", "name": "forAddress" }, { "type": "bytes32[]", "name": "eventHashes" }], "constant": true, "type": "function", "name": "getTokensInEvents", "outputs": [{ "type": "uint256[]", "name": "" }] }, { "inputs": [{ "type": "bytes32", "name": "marketHash" }, { "type": "uint8", "name": "outcomeIndex" }, { "type": "uint256", "name": "shareCount" }, { "type": "uint256", "name": "maxSpending" }], "constant": false, "type": "function", "name": "buyShares", "outputs": [{ "type": "uint256", "name": "" }] }, { "inputs": [{ "type": "bytes32", "name": "eventHash" }, { "type": "uint256", "name": "fee" }, { "type": "uint256", "name": "initialFunding" }, { "type": "address", "name": "marketMakerAddress" }], "constant": false, "type": "function", "name": "createMarket", "outputs": [{ "type": "bytes32", "name": "" }] }, { "inputs": [{ "type": "address[]", "name": "userAddresses" }], "constant": true, "type": "function", "name": "getHighScores", "outputs": [{ "type": "uint256[]", "name": "" }] }, { "inputs": [{ "type": "bytes32", "name": "marketHash" }], "constant": true, "type": "function", "name": "getMarket", "outputs": [{ "type": "bytes32", "name": "eventHash" }, { "type": "uint256", "name": "fee" }, { "type": "uint256", "name": "collectedFees" }, { "type": "uint256", "name": "initialFunding" }, { "type": "address", "name": "investorAddress" }, { "type": "address", "name": "marketMaker" }, { "type": "uint256", "name": "createdAtBlock" }] }, { "inputs": [{ "type": "address", "name": "owner" }], "constant": true, "type": "function", "name": "getLastCredit", "outputs": [{ "type": "uint256", "name": "" }] }, { "inputs": [{ "type": "bytes32", "name": "marketHash" }, { "type": "uint8", "name": "outcomeIndex" }, { "type": "uint256", "name": "shareCount" }, { "type": "uint256", "name": "expectedEarnings" }], "constant": false, "type": "function", "name": "sellShares", "outputs": [{ "type": "uint256", "name": "" }] }, { "inputs": [{ "type": "address", "name": "_owner" }, { "type": "address", "name": "_spender" }], "constant": true, "type": "function", "name": "allowance", "outputs": [{ "type": "uint256", "name": "remaining" }] }, { "inputs": [], "constant": true, "type": "function", "name": "getMinFunding", "outputs": [{ "type": "uint256", "name": "" }] }, { "inputs": [{ "type": "bytes32", "name": "marketHash" }], "constant": false, "type": "function", "name": "withdrawFees", "outputs": [{ "type": "uint256", "name": "" }] }, { "inputs": [], "type": "constructor" }, { "inputs": [{ "indexed": true, "type": "address", "name": "from" }, { "indexed": true, "type": "address", "name": "to" }, { "indexed": false, "type": "uint256", "name": "value" }], "type": "event", "name": "Transfer", "anonymous": false }, { "inputs": [{ "indexed": true, "type": "address", "name": "owner" }, { "indexed": true, "type": "address", "name": "spender" }, { "indexed": false, "type": "uint256", "name": "value" }], "type": "event", "name": "Approval", "anonymous": false }];
-	var events = exports.events = [{ "inputs": [{ "type": "bytes32", "name": "eventHash" }, { "type": "uint256", "name": "tokenCount" }], "constant": false, "type": "function", "name": "buyAllOutcomes", "outputs": [{ "type": "bool", "name": "" }] }, { "inputs": [], "constant": true, "type": "function", "name": "getBaseFee", "outputs": [{ "type": "uint256", "name": "" }] }, { "inputs": [{ "type": "address", "name": "owner" }, { "type": "address", "name": "spender" }], "constant": true, "type": "function", "name": "isPermanentlyApproved", "outputs": [{ "type": "bool", "name": "" }] }, { "inputs": [{ "type": "address", "name": "_daoAddress" }], "constant": false, "type": "function", "name": "changeDAO", "outputs": [{ "type": "bool", "name": "" }] }, { "inputs": [{ "type": "bytes32", "name": "eventHash" }, { "type": "uint256", "name": "outcomeIndex" }], "constant": true, "type": "function", "name": "getEventTokenAddress", "outputs": [{ "type": "address", "name": "" }] }, { "inputs": [{ "type": "uint256", "name": "tokenCount" }], "constant": true, "type": "function", "name": "calcBaseFee", "outputs": [{ "type": "uint256", "name": "" }] }, { "inputs": [{ "type": "bytes32", "name": "eventHash" }, { "type": "uint256", "name": "shareCount" }], "constant": false, "type": "function", "name": "redeemAllOutcomes", "outputs": [{ "type": "bool", "name": "" }] }, { "inputs": [{ "type": "address", "name": "owner" }, { "type": "bytes32[]", "name": "_eventHashes" }], "constant": true, "type": "function", "name": "getShares", "outputs": [{ "type": "uint256[]", "name": "" }] }, { "inputs": [{ "type": "address", "name": "spender" }], "constant": false, "type": "function", "name": "permitPermanentApproval", "outputs": [{ "type": "bool", "name": "" }] }, { "inputs": [{ "type": "address", "name": "spender" }], "constant": false, "type": "function", "name": "revokePermanentApproval", "outputs": [{ "type": "bool", "name": "" }] }, { "inputs": [{ "type": "bytes32", "name": "eventHash" }], "constant": true, "type": "function", "name": "getEvent", "outputs": [{ "type": "bytes32", "name": "descriptionHash" }, { "type": "address", "name": "creatorAddress" }, { "type": "bool", "name": "isRanged" }, { "type": "int256", "name": "lowerBound" }, { "type": "int256", "name": "upperBound" }, { "type": "uint256", "name": "outcomeCount" }, { "type": "address", "name": "tokenAddress" }, { "type": "address", "name": "oracleAddress" }, { "type": "bytes32", "name": "oracleEventIdentifier" }, { "type": "bool", "name": "isWinningOutcomeSet" }, { "type": "int256", "name": "winningOutcome" }] }, { "inputs": [{ "type": "bytes32[]", "name": "descriptionHashes" }], "constant": true, "type": "function", "name": "getEventHashes", "outputs": [{ "type": "uint256[]", "name": "" }] }, { "inputs": [{ "type": "bytes32", "name": "eventHash" }], "constant": false, "type": "function", "name": "redeemWinnings", "outputs": [{ "type": "uint256", "name": "" }] }, { "inputs": [{ "type": "bytes32", "name": "descriptionHash" }, { "type": "bool", "name": "isRanged" }, { "type": "int256", "name": "lowerBound" }, { "type": "int256", "name": "upperBound" }, { "type": "uint8", "name": "outcomeCount" }, { "type": "address", "name": "tokenAddress" }, { "type": "address", "name": "oracleAddress" }, { "type": "bytes32[]", "name": "data" }], "constant": false, "type": "function", "name": "createEvent", "outputs": [{ "type": "bytes32", "name": "" }] }, { "inputs": [{ "type": "uint256", "name": "shareCount" }], "constant": true, "type": "function", "name": "calcBaseFeeForShares", "outputs": [{ "type": "uint256", "name": "" }] }, { "inputs": [{ "type": "bytes32[]", "name": "_eventHashes" }, { "type": "address", "name": "oracleAddress" }, { "type": "address", "name": "tokenAddress" }, { "type": "address", "name": "creatorAddress" }], "constant": true, "type": "function", "name": "getEvents", "outputs": [{ "type": "uint256[]", "name": "" }] }, { "inputs": [{ "type": "uint256", "name": "_baseFee" }], "constant": false, "type": "function", "name": "changeBaseFee", "outputs": [{ "type": "bool", "name": "" }] }];
+	var token = exports.token = [{ "inputs": [], "constant": true, "name": "name", "payable": false, "outputs": [{ "type": "string", "name": "" }], "type": "function" }, { "inputs": [{ "type": "address", "name": "spender" }, { "type": "uint256", "name": "value" }], "constant": false, "name": "approve", "payable": false, "outputs": [{ "type": "bool", "name": "success" }], "type": "function" }, { "inputs": [], "constant": true, "name": "totalSupply", "payable": false, "outputs": [{ "type": "uint256", "name": "supply" }], "type": "function" }, { "inputs": [{ "type": "address", "name": "from" }, { "type": "address", "name": "to" }, { "type": "uint256", "name": "value" }], "constant": false, "name": "transferFrom", "payable": false, "outputs": [{ "type": "bool", "name": "success" }], "type": "function" }, { "inputs": [], "constant": true, "name": "decimals", "payable": false, "outputs": [{ "type": "uint8", "name": "" }], "type": "function" }, { "inputs": [{ "type": "address", "name": "owner" }], "constant": true, "name": "balanceOf", "payable": false, "outputs": [{ "type": "uint256", "name": "balance" }], "type": "function" }, { "inputs": [], "constant": true, "name": "symbol", "payable": false, "outputs": [{ "type": "string", "name": "" }], "type": "function" }, { "inputs": [{ "type": "address", "name": "to" }, { "type": "uint256", "name": "value" }], "constant": false, "name": "transfer", "payable": false, "outputs": [{ "type": "bool", "name": "success" }], "type": "function" }, { "inputs": [{ "type": "address", "name": "owner" }, { "type": "address", "name": "spender" }], "constant": true, "name": "allowance", "payable": false, "outputs": [{ "type": "uint256", "name": "remaining" }], "type": "function" }, { "inputs": [{ "indexed": true, "type": "address", "name": "from" }, { "indexed": true, "type": "address", "name": "to" }, { "indexed": false, "type": "uint256", "name": "value" }], "type": "event", "name": "Transfer", "anonymous": false }, { "inputs": [{ "indexed": true, "type": "address", "name": "owner" }, { "indexed": true, "type": "address", "name": "spender" }, { "indexed": false, "type": "uint256", "name": "value" }], "type": "event", "name": "Approval", "anonymous": false }];
+	var oracle = exports.oracle = [{ "inputs": [], "constant": true, "name": "name", "payable": false, "outputs": [{ "type": "string", "name": "" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "eventIdentifier" }], "constant": true, "name": "getEventData", "payable": false, "outputs": [{ "type": "bytes32[]", "name": "data" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "eventIdentifier" }], "constant": true, "name": "isOutcomeSet", "payable": false, "outputs": [{ "type": "bool", "name": "isSet" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "eventIdentifier" }], "constant": true, "name": "getOutcome", "payable": false, "outputs": [{ "type": "int256", "name": "outcome" }], "type": "function" }, { "inputs": [{ "type": "bytes32[]", "name": "data" }], "constant": false, "name": "registerEvent", "payable": false, "outputs": [{ "type": "bytes32", "name": "eventIdentifier" }], "type": "function" }, { "inputs": [{ "type": "bytes32[]", "name": "data" }], "constant": true, "name": "getFee", "payable": false, "outputs": [{ "type": "uint256", "name": "fee" }, { "type": "address", "name": "token" }], "type": "function" }, { "inputs": [{ "indexed": true, "type": "address", "name": "creator" }, { "indexed": true, "type": "bytes32", "name": "eventIdentifier" }], "type": "event", "name": "EventRegistration", "anonymous": false }];
+	var marketMaker = exports.marketMaker = [{ "inputs": [{ "type": "bytes32", "name": "marketHash" }, { "type": "uint256", "name": "initialFunding" }, { "type": "uint256[]", "name": "shareDistribution" }, { "type": "uint8", "name": "outcomeIndex" }, { "type": "uint256", "name": "shareCount" }], "constant": true, "name": "calcCostsBuying", "payable": false, "outputs": [{ "type": "uint256", "name": "costs" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "marketHash" }, { "type": "uint256", "name": "initialFunding" }, { "type": "uint256[]", "name": "shareDistribution" }, { "type": "uint8", "name": "outcomeIndex" }, { "type": "uint256", "name": "shareCount" }], "constant": true, "name": "calcEarningsSelling", "payable": false, "outputs": [{ "type": "uint256", "name": "earnings" }], "type": "function" }];
+	var marketFactory = exports.marketFactory = [{ "inputs": [{ "type": "bytes32", "name": "marketHash" }], "constant": false, "name": "closeMarket", "payable": false, "outputs": [{ "type": "bool", "name": "success" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "marketHash" }, { "type": "uint8", "name": "outcomeIndex" }, { "type": "uint256", "name": "shareCount" }, { "type": "uint256", "name": "expectedEarnings" }], "constant": false, "name": "shortSellShares", "payable": false, "outputs": [{ "type": "uint256", "name": "totalCosts" }], "type": "function" }, { "inputs": [{ "type": "bytes32[]", "name": "marketHashes" }, { "type": "address", "name": "investor" }], "constant": true, "name": "getMarkets", "payable": false, "outputs": [{ "type": "uint256[]", "name": "allMarkets" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "marketHash" }, { "type": "uint256", "name": "tokenCount" }], "constant": true, "name": "calcMarketFee", "payable": false, "outputs": [{ "type": "uint256", "name": "fee" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "marketHash" }], "constant": true, "name": "getShareDistribution", "payable": false, "outputs": [{ "type": "uint256[256]", "name": "shareDistribution" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "marketHash" }], "constant": true, "name": "getShareDistributionWithTimestamp", "payable": false, "outputs": [{ "type": "uint256[]", "name": "shareDistribution" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "marketHash" }, { "type": "uint8", "name": "outcomeIndex" }, { "type": "uint256", "name": "shareCount" }, { "type": "uint256", "name": "maxSpending" }], "constant": false, "name": "buyShares", "payable": false, "outputs": [{ "type": "uint256", "name": "totalCosts" }], "type": "function" }, { "inputs": [{ "type": "bytes32[]", "name": "eventHashes" }, { "type": "address[]", "name": "investors" }], "constant": true, "name": "getMarketHashes", "payable": false, "outputs": [{ "type": "uint256[]", "name": "allMarketHashes" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "eventHash" }, { "type": "uint256", "name": "fee" }, { "type": "uint256", "name": "initialFunding" }, { "type": "address", "name": "marketMakerAddress" }], "constant": false, "name": "createMarket", "payable": false, "outputs": [{ "type": "bytes32", "name": "marketHash" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "marketHash" }], "constant": true, "name": "getMarket", "payable": false, "outputs": [{ "type": "bytes32", "name": "eventHash" }, { "type": "uint256", "name": "fee" }, { "type": "uint256", "name": "collectedFees" }, { "type": "uint256", "name": "initialFunding" }, { "type": "address", "name": "investor" }, { "type": "address", "name": "marketMaker" }, { "type": "uint256", "name": "createdAtBlock" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "marketHash" }, { "type": "uint8", "name": "outcomeIndex" }, { "type": "uint256", "name": "shareCount" }, { "type": "uint256", "name": "expectedEarnings" }], "constant": false, "name": "sellShares", "payable": false, "outputs": [{ "type": "uint256", "name": "netEarnings" }], "type": "function" }, { "inputs": [], "constant": true, "name": "getMinFunding", "payable": false, "outputs": [{ "type": "uint256", "name": "minFunding" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "marketHash" }], "constant": false, "name": "withdrawFees", "payable": false, "outputs": [{ "type": "uint256", "name": "fees" }], "type": "function" }];
+	var ultimateOracle = exports.ultimateOracle = [{ "inputs": [], "constant": true, "name": "name", "payable": false, "outputs": [{ "type": "string", "name": "" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "eventIdentifier" }], "constant": true, "name": "getEventData", "payable": false, "outputs": [{ "type": "bytes32[]", "name": "data" }], "type": "function" }, { "inputs": [{ "type": "bytes32[]", "name": "descriptionHashes" }, { "type": "int256[]", "name": "outcomes" }], "constant": true, "name": "getUltimateOutcomes", "payable": false, "outputs": [{ "type": "uint256[]", "name": "allUltimateOutcomes" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "" }], "constant": true, "name": "descriptionHashes", "payable": false, "outputs": [{ "type": "bytes32", "name": "" }], "type": "function" }, { "inputs": [{ "type": "address", "name": "" }, { "type": "bytes32", "name": "" }, { "type": "int256", "name": "" }], "constant": true, "name": "deposits", "payable": false, "outputs": [{ "type": "uint256", "name": "" }], "type": "function" }, { "inputs": [{ "type": "address", "name": "" }, { "type": "bytes32", "name": "" }, { "type": "int256", "name": "" }], "constant": true, "name": "shares", "payable": false, "outputs": [{ "type": "uint256", "name": "" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "" }, { "type": "address", "name": "" }], "constant": true, "name": "oracleOutcomes", "payable": false, "outputs": [{ "type": "uint256", "name": "submissionAtTimestamp" }, { "type": "int256", "name": "outcome" }, { "type": "bool", "name": "challenged" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "eventIdentifier" }], "constant": true, "name": "isOutcomeSet", "payable": false, "outputs": [{ "type": "bool", "name": "isSet" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "eventIdentifier" }], "constant": true, "name": "getOutcome", "payable": false, "outputs": [{ "type": "int256", "name": "outcome" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "descriptionHash" }, { "type": "int256", "name": "outcome" }, { "type": "uint256", "name": "amount" }], "constant": false, "name": "voteForUltimateOutcome", "payable": false, "outputs": [{ "type": "bool", "name": "success" }], "type": "function" }, { "inputs": [{ "type": "bytes32[]", "name": "descriptionHashes" }, { "type": "address[]", "name": "oracles" }], "constant": true, "name": "getOracleOutcomes", "payable": false, "outputs": [{ "type": "uint256[]", "name": "allOracleOutcomes" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "descriptionHash" }], "constant": false, "name": "setUltimateOutcome", "payable": false, "outputs": [{ "type": "bool", "name": "success" }], "type": "function" }, { "inputs": [{ "type": "address", "name": "user" }, { "type": "bytes32[]", "name": "descriptionHashes" }, { "type": "int256[]", "name": "outcomes" }], "constant": true, "name": "getShares", "payable": false, "outputs": [{ "type": "uint256[]", "name": "allShares" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "descriptionHash" }], "constant": false, "name": "redeemWinnings", "payable": false, "outputs": [{ "type": "bool", "name": "success" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "descriptionHash" }, { "type": "address", "name": "oracle" }, { "type": "int256", "name": "outcome" }], "constant": false, "name": "challengeOracle", "payable": false, "outputs": [{ "type": "bool", "name": "success" }], "type": "function" }, { "inputs": [{ "type": "bytes32[]", "name": "data" }], "constant": false, "name": "registerEvent", "payable": false, "outputs": [{ "type": "bytes32", "name": "eventIdentifier" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "" }], "constant": true, "name": "ultimateOutcomes", "payable": false, "outputs": [{ "type": "bool", "name": "isFinal" }, { "type": "uint256", "name": "closingAtTimestamp" }, { "type": "int256", "name": "frontRunner" }, { "type": "uint256", "name": "totalShares" }, { "type": "uint256", "name": "totalDeposits" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "eventIdentifier" }, { "type": "bytes32[]", "name": "data" }], "constant": false, "name": "setOutcome", "payable": false, "outputs": [{ "type": "bool", "name": "success" }], "type": "function" }, { "inputs": [{ "type": "bytes32[]", "name": "data" }], "constant": true, "name": "getFee", "payable": false, "outputs": [{ "type": "uint256", "name": "fee" }, { "type": "address", "name": "_token" }], "type": "function" }, { "inputs": [{ "type": "address[]", "name": "oracles" }], "constant": true, "name": "getFallbackOracles", "payable": false, "outputs": [{ "type": "address[]", "name": "allFallbackOracles" }], "type": "function" }, { "inputs": [{ "type": "address", "name": "fallbackOracle" }], "constant": false, "name": "registerFallbackOracle", "payable": false, "outputs": [{ "type": "bool", "name": "success" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "" }, { "type": "uint256", "name": "" }], "constant": true, "name": "eventOracles", "payable": false, "outputs": [{ "type": "address", "name": "" }], "type": "function" }, { "inputs": [{ "indexed": true, "type": "address", "name": "creator" }, { "indexed": true, "type": "bytes32", "name": "eventIdentifier" }], "type": "event", "name": "EventRegistration", "anonymous": false }];
+	var hunchGameMarketFactory = exports.hunchGameMarketFactory = [{ "inputs": [{ "type": "bytes32", "name": "marketHash" }], "constant": false, "name": "closeMarket", "payable": false, "outputs": [{ "type": "bool", "name": "success" }], "type": "function" }, { "inputs": [], "constant": true, "name": "name", "payable": false, "outputs": [{ "type": "string", "name": "" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "marketHash" }, { "type": "uint8", "name": "outcomeIndex" }, { "type": "uint256", "name": "shareCount" }, { "type": "uint256", "name": "expectedEarnings" }], "constant": false, "name": "shortSellShares", "payable": false, "outputs": [{ "type": "uint256", "name": "costs" }], "type": "function" }, { "inputs": [{ "type": "address", "name": "userAddress" }], "constant": false, "name": "userLevel", "payable": false, "outputs": [{ "type": "uint256", "name": "level" }], "type": "function" }, { "inputs": [{ "type": "bytes32[]", "name": "marketHashes" }, { "type": "address", "name": "investor" }], "constant": true, "name": "getMarkets", "payable": false, "outputs": [{ "type": "uint256[]", "name": "allMarkets" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "marketHash" }, { "type": "uint256", "name": "tokenCount" }], "constant": true, "name": "calcMarketFee", "payable": false, "outputs": [{ "type": "uint256", "name": "fee" }], "type": "function" }, { "inputs": [], "constant": false, "name": "buyCredits", "payable": true, "outputs": [{ "type": "bool", "name": "success" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "marketHash" }], "constant": true, "name": "getShareDistribution", "payable": false, "outputs": [{ "type": "uint256[256]", "name": "shareDistribution" }], "type": "function" }, { "inputs": [], "constant": false, "name": "addCredit", "payable": false, "outputs": [{ "type": "bool", "name": "success" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "marketHash" }], "constant": true, "name": "getShareDistributionWithTimestamp", "payable": false, "outputs": [{ "type": "uint256[]", "name": "shareDistribution" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "eventHash" }], "constant": false, "name": "redeemWinnings", "payable": false, "outputs": [{ "type": "uint256", "name": "winnings" }], "type": "function" }, { "inputs": [{ "type": "address", "name": "user" }, { "type": "bytes32[]", "name": "eventHashes" }], "constant": true, "name": "getTokensInEvents", "payable": false, "outputs": [{ "type": "uint256[]", "name": "allTokens" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "marketHash" }, { "type": "uint8", "name": "outcomeIndex" }, { "type": "uint256", "name": "shareCount" }, { "type": "uint256", "name": "maxSpending" }], "constant": false, "name": "buyShares", "payable": false, "outputs": [{ "type": "uint256", "name": "costs" }], "type": "function" }, { "inputs": [{ "type": "bytes32[]", "name": "eventHashes" }, { "type": "address[]", "name": "investors" }], "constant": true, "name": "getMarketHashes", "payable": false, "outputs": [{ "type": "uint256[]", "name": "allMarketHashes" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "eventHash" }, { "type": "uint256", "name": "fee" }, { "type": "uint256", "name": "initialFunding" }, { "type": "address", "name": "marketMakerAddress" }], "constant": false, "name": "createMarket", "payable": false, "outputs": [{ "type": "bytes32", "name": "marketHash" }], "type": "function" }, { "inputs": [{ "type": "address[]", "name": "userAddresses" }], "constant": true, "name": "getHighScores", "payable": false, "outputs": [{ "type": "uint256[]", "name": "allHighScores" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "marketHash" }], "constant": true, "name": "getMarket", "payable": false, "outputs": [{ "type": "bytes32", "name": "eventHash" }, { "type": "uint256", "name": "fee" }, { "type": "uint256", "name": "collectedFees" }, { "type": "uint256", "name": "initialFunding" }, { "type": "address", "name": "investor" }, { "type": "address", "name": "marketMaker" }, { "type": "uint256", "name": "createdAtBlock" }], "type": "function" }, { "inputs": [{ "type": "address", "name": "_owner" }], "constant": true, "name": "getLastCredit", "payable": false, "outputs": [{ "type": "uint256", "name": "lastCredit" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "marketHash" }, { "type": "uint8", "name": "outcomeIndex" }, { "type": "uint256", "name": "shareCount" }, { "type": "uint256", "name": "expectedEarnings" }], "constant": false, "name": "sellShares", "payable": false, "outputs": [{ "type": "uint256", "name": "earnings" }], "type": "function" }, { "inputs": [], "constant": true, "name": "getMinFunding", "payable": false, "outputs": [{ "type": "uint256", "name": "minFunding" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "marketHash" }], "constant": false, "name": "withdrawFees", "payable": false, "outputs": [{ "type": "uint256", "name": "fees" }], "type": "function" }, { "inputs": [{ "indexed": true, "type": "address", "name": "investor" }, { "indexed": true, "type": "bytes32", "name": "marketHash" }], "type": "event", "name": "MarketCreation", "anonymous": false }, { "inputs": [{ "indexed": true, "type": "address", "name": "investor" }, { "indexed": true, "type": "bytes32", "name": "marketHash" }], "type": "event", "name": "MarketClosing", "anonymous": false }];
+	var hunchGameToken = exports.hunchGameToken = [{ "inputs": [], "constant": true, "name": "name", "payable": false, "outputs": [{ "type": "string", "name": "" }], "type": "function" }, { "inputs": [{ "type": "address", "name": "_spender" }, { "type": "uint256", "name": "_value" }], "constant": false, "name": "approve", "payable": false, "outputs": [{ "type": "bool", "name": "success" }], "type": "function" }, { "inputs": [], "constant": true, "name": "totalSupply", "payable": false, "outputs": [{ "type": "uint256", "name": "" }], "type": "function" }, { "inputs": [{ "type": "address", "name": "_from" }, { "type": "address", "name": "_to" }, { "type": "uint256", "name": "_value" }], "constant": false, "name": "transferFrom", "payable": false, "outputs": [{ "type": "bool", "name": "success" }], "type": "function" }, { "inputs": [], "constant": true, "name": "decimals", "payable": false, "outputs": [{ "type": "uint8", "name": "" }], "type": "function" }, { "inputs": [{ "type": "address", "name": "user" }, { "type": "uint256", "name": "tokenCount" }], "constant": false, "name": "issueTokens", "payable": false, "outputs": [{ "type": "bool", "name": "success" }], "type": "function" }, { "inputs": [{ "type": "address", "name": "_hunchGameMarketManager" }], "constant": false, "name": "setup", "payable": false, "outputs": [{ "type": "bool", "name": "success" }], "type": "function" }, { "inputs": [{ "type": "address", "name": "_owner" }], "constant": true, "name": "balanceOf", "payable": false, "outputs": [{ "type": "uint256", "name": "balance" }], "type": "function" }, { "inputs": [], "constant": true, "name": "symbol", "payable": false, "outputs": [{ "type": "string", "name": "" }], "type": "function" }, { "inputs": [{ "type": "address", "name": "_to" }, { "type": "uint256", "name": "_value" }], "constant": false, "name": "transfer", "payable": false, "outputs": [{ "type": "bool", "name": "success" }], "type": "function" }, { "inputs": [{ "type": "address", "name": "_owner" }, { "type": "address", "name": "_spender" }], "constant": true, "name": "allowance", "payable": false, "outputs": [{ "type": "uint256", "name": "remaining" }], "type": "function" }, { "inputs": [], "type": "constructor" }, { "inputs": [{ "indexed": true, "type": "address", "name": "from" }, { "indexed": true, "type": "address", "name": "to" }, { "indexed": false, "type": "uint256", "name": "value" }], "type": "event", "name": "Transfer", "anonymous": false }, { "inputs": [{ "indexed": true, "type": "address", "name": "owner" }, { "indexed": true, "type": "address", "name": "spender" }, { "indexed": false, "type": "uint256", "name": "value" }], "type": "event", "name": "Approval", "anonymous": false }];
+	var eventFactory = exports.eventFactory = [{ "inputs": [{ "type": "bytes32", "name": "eventHash" }, { "type": "uint256", "name": "outcomeIndex" }], "constant": true, "name": "getEventToken", "payable": false, "outputs": [{ "type": "address", "name": "eventToken" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "eventHash" }, { "type": "uint256", "name": "tokenCount" }], "constant": false, "name": "buyAllOutcomes", "payable": false, "outputs": [{ "type": "bool", "name": "success" }], "type": "function" }, { "inputs": [{ "type": "bytes32[]", "name": "_eventHashes" }, { "type": "address", "name": "oracle" }, { "type": "address", "name": "token" }], "constant": true, "name": "getEvents", "payable": false, "outputs": [{ "type": "uint256[]", "name": "allEvents" }], "type": "function" }, { "inputs": [{ "type": "bytes32[]", "name": "descriptionHashes" }, { "type": "address[]", "name": "creators" }], "constant": true, "name": "getEventHashes", "payable": false, "outputs": [{ "type": "uint256[]", "name": "allEventHashes" }], "type": "function" }, { "inputs": [{ "type": "address", "name": "owner" }, { "type": "address", "name": "spender" }], "constant": true, "name": "isPermanentlyApproved", "payable": false, "outputs": [{ "type": "bool", "name": "approved" }], "type": "function" }, { "inputs": [{ "type": "address", "name": "daoAddress" }], "constant": false, "name": "changeDAO", "payable": false, "outputs": [{ "type": "bool", "name": "success" }], "type": "function" }, { "inputs": [{ "type": "uint256", "name": "tokenCount" }], "constant": true, "name": "calcBaseFee", "payable": false, "outputs": [{ "type": "uint256", "name": "fee" }], "type": "function" }, { "inputs": [{ "type": "address", "name": "owner" }, { "type": "bytes32[]", "name": "_eventHashes" }], "constant": true, "name": "getShares", "payable": false, "outputs": [{ "type": "uint256[]", "name": "allShares" }], "type": "function" }, { "inputs": [{ "type": "address", "name": "spender" }], "constant": false, "name": "permitPermanentApproval", "payable": false, "outputs": [{ "type": "bool", "name": "success" }], "type": "function" }, { "inputs": [{ "type": "address", "name": "spender" }], "constant": false, "name": "revokePermanentApproval", "payable": false, "outputs": [{ "type": "bool", "name": "success" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "eventHash" }], "constant": true, "name": "getEvent", "payable": false, "outputs": [{ "type": "bytes32", "name": "descriptionHash" }, { "type": "bool", "name": "isRanged" }, { "type": "int256", "name": "lowerBound" }, { "type": "int256", "name": "upperBound" }, { "type": "uint256", "name": "outcomeCount" }, { "type": "address", "name": "token" }, { "type": "address", "name": "oracle" }, { "type": "bytes32", "name": "oracleEventIdentifier" }, { "type": "bool", "name": "isWinningOutcomeSet" }, { "type": "int256", "name": "winningOutcome" }], "type": "function" }, { "inputs": [], "constant": true, "name": "getDAO", "payable": false, "outputs": [{ "type": "address", "name": "daoAddress" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "eventHash" }], "constant": false, "name": "redeemWinnings", "payable": false, "outputs": [{ "type": "uint256", "name": "winnings" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "descriptionHash" }, { "type": "bool", "name": "isRanged" }, { "type": "int256", "name": "lowerBound" }, { "type": "int256", "name": "upperBound" }, { "type": "uint8", "name": "outcomeCount" }, { "type": "address", "name": "token" }, { "type": "address", "name": "oracle" }, { "type": "bytes32[]", "name": "data" }], "constant": false, "name": "createEvent", "payable": false, "outputs": [{ "type": "bytes32", "name": "eventHash" }], "type": "function" }, { "inputs": [{ "type": "bytes32", "name": "eventHash" }, { "type": "uint256", "name": "shareCount" }], "constant": false, "name": "sellAllOutcomes", "payable": false, "outputs": [{ "type": "bool", "name": "success" }], "type": "function" }, { "inputs": [{ "type": "uint256", "name": "shareCount" }], "constant": true, "name": "calcBaseFeeForShares", "payable": false, "outputs": [{ "type": "uint256", "name": "fee" }], "type": "function" }];
 	var etherToken = exports.etherToken = [{ "inputs": [], "constant": true, "type": "function", "name": "name", "outputs": [{ "type": "string", "name": "" }] }, { "inputs": [{ "type": "address", "name": "_spender" }, { "type": "uint256", "name": "_value" }], "constant": false, "type": "function", "name": "approve", "outputs": [{ "type": "bool", "name": "success" }] }, { "inputs": [], "constant": true, "type": "function", "name": "totalSupply", "outputs": [{ "type": "uint256", "name": "" }] }, { "inputs": [{ "type": "address", "name": "_from" }, { "type": "address", "name": "_to" }, { "type": "uint256", "name": "_value" }], "constant": false, "type": "function", "name": "transferFrom", "outputs": [{ "type": "bool", "name": "success" }] }, { "inputs": [], "constant": true, "type": "function", "name": "decimals", "outputs": [{ "type": "uint8", "name": "" }] }, { "inputs": [{ "type": "uint256", "name": "count" }], "constant": false, "type": "function", "name": "sellTokens", "outputs": [{ "type": "bool", "name": "" }] }, { "inputs": [{ "type": "address", "name": "_owner" }], "constant": true, "type": "function", "name": "balanceOf", "outputs": [{ "type": "uint256", "name": "balance" }] }, { "inputs": [], "constant": true, "type": "function", "name": "symbol", "outputs": [{ "type": "string", "name": "" }] }, { "inputs": [{ "type": "address", "name": "_to" }, { "type": "uint256", "name": "_value" }], "constant": false, "type": "function", "name": "transfer", "outputs": [{ "type": "bool", "name": "success" }] }, { "inputs": [], "constant": false, "type": "function", "name": "buyTokens", "outputs": [{ "type": "bool", "name": "" }] }, { "inputs": [{ "type": "address", "name": "_owner" }, { "type": "address", "name": "_spender" }], "constant": true, "type": "function", "name": "allowance", "outputs": [{ "type": "uint256", "name": "remaining" }] }, { "inputs": [{ "indexed": true, "type": "address", "name": "from" }, { "indexed": true, "type": "address", "name": "to" }, { "indexed": false, "type": "uint256", "name": "value" }], "type": "event", "name": "Transfer", "anonymous": false }, { "inputs": [{ "indexed": true, "type": "address", "name": "owner" }, { "indexed": true, "type": "address", "name": "spender" }, { "indexed": false, "type": "uint256", "name": "value" }], "type": "event", "name": "Approval", "anonymous": false }];
 
 /***/ },
@@ -51154,34 +51136,28 @@ var gnosis =
 	exports.updateBlocknumber = updateBlocknumber;
 	exports.getSample = getSample;
 	exports.updateHistory = updateHistory;
-	exports.updateBaseFee = updateBaseFee;
 	exports.buildState = buildState;
-	exports.updateState = updateState;
 	exports.get = get;
 
-	var _events = __webpack_require__(206);
+	var _eventFactory = __webpack_require__(206);
 
-	var eventToken = _interopRequireWildcard(_events);
+	var eventFactory = _interopRequireWildcard(_eventFactory);
 
-	var _abstractToken = __webpack_require__(416);
+	var _token = __webpack_require__(416);
 
-	var abstractToken = _interopRequireWildcard(_abstractToken);
+	var abstractToken = _interopRequireWildcard(_token);
 
-	var _abstractMarket = __webpack_require__(417);
+	var _marketFactory = __webpack_require__(417);
 
-	var market = _interopRequireWildcard(_abstractMarket);
+	var marketFactory = _interopRequireWildcard(_marketFactory);
 
-	var _abstractMarketMaker = __webpack_require__(419);
+	var _marketMaker = __webpack_require__(419);
 
-	var marketMaker = _interopRequireWildcard(_abstractMarketMaker);
+	var marketMaker = _interopRequireWildcard(_marketMaker);
 
 	var _api = __webpack_require__(421);
 
 	var api = _interopRequireWildcard(_api);
-
-	var _marketMaker = __webpack_require__(420);
-
-	var MarketMakerLib = _interopRequireWildcard(_marketMaker);
 
 	var _bignumber = __webpack_require__(77);
 
@@ -51221,9 +51197,6 @@ var gnosis =
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	/**
-	 * Created by denisgranha on 13/4/16.
-	 */
 	var state = exports.state = {
 	    blockNumber: 0,
 	    eventDescriptions: {},
@@ -51233,7 +51206,10 @@ var gnosis =
 	    tokens: {},
 	    baseFee: null,
 	    eventCount: 0
-	};
+	}; /**
+	    * Created by denisgranha on 13/4/16.
+	    */
+
 
 	function reset() {
 	    state.blockNumber = 0;
@@ -51315,7 +51291,9 @@ var gnosis =
 	            oracle_addresses: defaultFilters.oracleAddresses,
 	            creator_address: defaultFilters.creatorAddress,
 	            page_size: defaultFilters.pageSize,
-	            page: defaultFilters.page
+	            page: defaultFilters.page,
+	            title: defaultFilters.title,
+	            tags: defaultFilters.tags
 	        }).then(function (eventResponse) {
 	            state.eventCount = eventResponse.data.count;
 	            var events = eventResponse.data.results;
@@ -51342,13 +51320,13 @@ var gnosis =
 	                        // sha3(descriptionHash+fee), recover oracle address
 	                        try {
 	                            var fee = event.offChainOracles[oracleAddress].fee;
+	                            var feeToken = fee.feeToken;
 	                            if (fee) {
 	                                var v = new Buffer(new _bignumber2.default(fee.v).toString(16), 'hex');
 	                                var r = new Buffer(hex.encode(new _bignumber2.default(fee.r), 256).slice(2), 'hex');
 	                                var s = new Buffer(hex.encode(new _bignumber2.default(fee.s), 256).slice(2), 'hex');
-
 	                                var feeHex = hex.encode(new _bignumber2.default(fee.fee), 256);
-	                                var address = '0x' + _ethLightwallet.signing.recoverAddress(identifiers.descriptionHash + feeHex.slice(2), v, r, s).toString('hex');
+	                                var address = '0x' + _ethLightwallet.signing.recoverAddress(identifiers.descriptionHash + feeHex.slice(2) + feeToken.slice(2), v, r, s).toString('hex');
 
 	                                if (oracleAddress != address) {
 	                                    event.offChainOracles[oracleAddress].fee = null;
@@ -51405,7 +51383,7 @@ var gnosis =
 	    });
 	}
 
-	function updateEvents(config, resolverAddress, tokenAddress, creatorAddress, filteredEventHashes) {
+	function updateEvents(config, creators, resolverAddress, tokenAddress, filteredEventHashes) {
 	    return new _promise2.default(function (resolve, reject) {
 	        // If eventHashes passed, get all Description Hashes related
 	        if (filteredEventHashes) {
@@ -51414,14 +51392,14 @@ var gnosis =
 	        // If not, get all Description Hashes
 	        else {
 	                var descriptionHashes = (0, _keys2.default)(state.eventDescriptions);
-	                eventToken.getEventHashesProcessed(descriptionHashes, config).then(function (eventHashes) {
+	                eventFactory.getEventHashesProcessed(descriptionHashes, creators, config).then(function (eventHashes) {
 	                    resolve(eventHashes);
 	                });
 	            }
 	    }).then(function (eventHashes) {
 	        return new _promise2.default(function (resolve, reject) {
 	            // get events from blockchain
-	            eventToken.getEventsProcessed(eventHashes, resolverAddress, tokenAddress, creatorAddress, config).then(function (events) {
+	            eventFactory.getEventsProcessed(eventHashes, resolverAddress, tokenAddress, config).then(function (events) {
 	                // console.log("descriptions", state.eventDescriptions);
 	                // console.log("events", events, eventHashes, resolverAddress);
 	                var checkedEvents = {};
@@ -51458,20 +51436,20 @@ var gnosis =
 	    });
 	}
 
-	function updateMarkets(config, marketContractAddress, investorAddress, filteredMarketHashes) {
+	function updateMarkets(config, investors, marketContractAddress, filteredMarketHashes) {
 	    return new _promise2.default(function (resolve, reject) {
 	        if (filteredMarketHashes) {
 	            resolve(filteredMarketHashes);
 	        }
 	        // If no eventHashes are passed to the function, will get all eventHashes on state
 	        else {
-	                market.getMarketHashesProcessed((0, _keys2.default)(state.events), config, marketContractAddress).then(function (marketHashes) {
+	                marketFactory.getMarketHashesProcessed((0, _keys2.default)(state.events), investors, config, marketContractAddress).then(function (marketHashes) {
 	                    resolve(marketHashes);
 	                });
 	            }
 	    }).then(function (marketHashes) {
 	        return new _promise2.default(function (resolve, reject) {
-	            market.getMarketsProcessed(marketHashes, config, investorAddress, marketContractAddress).then(function (markets) {
+	            marketFactory.getMarketsProcessed(marketHashes, config, marketContractAddress).then(function (markets) {
 	                // console.log("markets", markets);
 
 	                var checkedMarkets = {};
@@ -51579,7 +51557,7 @@ var gnosis =
 	function updateEventTokenShares(forAddress, eventHashes, config) {
 	    return new _promise2.default(function (resolve, reject) {
 	        // Get shares for on event token contract
-	        eventToken.getSharesProcessed(forAddress, eventHashes, config).then(function (shares) {
+	        eventFactory.getSharesProcessed(forAddress, eventHashes, config).then(function (shares) {
 
 	            //remove the old entries, otherwise removed shares will be left in state.
 	            for (var tokenAddress in state.tokens) {
@@ -51609,7 +51587,7 @@ var gnosis =
 
 	function getSample(marketAddress, marketHash, blockNumber, config) {
 	    var sharesPromise = new _promise2.default(function (resolve, reject) {
-	        config.batch.add(market.getShareDistributionWithTimestamp(marketHash, blockNumber, config, marketAddress, (0, _callbacks.promiseCallback)(resolve, reject)));
+	        config.batch.add(marketFactory.getShareDistributionWithTimestamp(marketHash, blockNumber, config, marketAddress, (0, _callbacks.promiseCallback)(resolve, reject)));
 	    });
 	    return sharesPromise.then(function (sharesData) {
 	        var shares = sharesData.slice(1); // getShareDistribution includes timestamp, we don't need it
@@ -51672,19 +51650,27 @@ var gnosis =
 	    return _promise2.default.all(samplePromises);
 	}
 
-	function updateBaseFee(config) {
-	    return new _promise2.default(function (resolve, reject) {
-	        eventToken.getBaseFee(config, (0, _callbacks.promiseCallback)(resolve, reject)).call();
-	    });
-	}
+	// export function updateBaseFee(config){
+	//     return new Promise((resolve, reject) => {
+	//         eventFactory.getBaseFee(config, promiseCallback(resolve, reject)).call();
+	//     });
+	// }
 
-	function buildState(config, tokenAddresses, marketAddresses) {
+	function buildState(config, creators, investors, tokenAddresses, marketAddresses) {
 	    if (!tokenAddresses) {
-	        tokenAddresses = [0, config.addresses.defaultMarket];
+	        tokenAddresses = [config.addresses.etherToken];
 	    }
 
 	    if (!marketAddresses) {
-	        marketAddresses = [config.addresses.defaultMarket];
+	        marketAddresses = [config.addresses.defaultMarketFactory];
+	    }
+
+	    if (!creators) {
+	        creators = [config.account];
+	    }
+
+	    if (!investors) {
+	        investors = [config.account];
 	    }
 
 	    return (0, _co2.default)(_regenerator2.default.mark(function _callee() {
@@ -51699,16 +51685,18 @@ var gnosis =
 	                    case 2:
 	                        eventDescriptions = _context.sent;
 	                        _context.next = 5;
-	                        return updateEvents(config, config.addressFilters.oracle);
+	                        return updateEvents(config, creators, config.addressFilters.oracle);
 
 	                    case 5:
 	                        events = _context.sent;
-	                        parallelUpdates = [updateTokens(tokenAddresses, config), updateEventTokenShares(config.account, (0, _keys2.default)(state.events), config), updateBlocknumber(config), updateBaseFee(config)];
+	                        parallelUpdates = [updateTokens(tokenAddresses, config), updateEventTokenShares(config.account, (0, _keys2.default)(state.events), config), updateBlocknumber(config)
+	                        // updateBaseFee(config),
+	                        ];
 
 	                        // Add market updates to parallelUpdates array
 
 	                        marketAddresses.map(function (marketAddress) {
-	                            parallelUpdates.push(updateMarkets(config, marketAddress, config.addressFilters.investor));
+	                            parallelUpdates.push(updateMarkets(config, investors, marketAddress));
 	                        });
 
 	                        if (Array.isArray(config.additionalUpdates)) {
@@ -51731,51 +51719,6 @@ var gnosis =
 	                }
 	            }
 	        }, _callee, this);
-	    }));
-	}
-
-	function updateState(config, filteredMarketHashes, tokenAddresses, marketAddresses) {
-
-	    if (!tokenAddresses) {
-	        tokenAddresses = [0, config.addresses.defaultMarket, config.addresses.eventToken];
-	    }
-
-	    if (!marketAddresses) {
-	        marketAddresses = [config.addresses.defaultMarket];
-	    }
-
-	    return (0, _co2.default)(_regenerator2.default.mark(function _callee2() {
-	        var parallelUpdates;
-	        return _regenerator2.default.wrap(function _callee2$(_context2) {
-	            while (1) {
-	                switch (_context2.prev = _context2.next) {
-	                    case 0:
-	                        parallelUpdates = [updateTokens(tokenAddresses, config), updateEventTokenShares(config.account, (0, _keys2.default)(state.events), config), updateBlocknumber(config), updateBaseFee(config)];
-
-	                        // Add market updates to parallelUpdates array
-
-	                        marketAddresses.map(function (marketAddress) {
-	                            parallelUpdates.push(updateMarkets(config, marketAddress, config.addressFilters.investor, filteredMarketHashes));
-	                        });
-
-	                        if (Array.isArray(config.additionalUpdates)) {
-	                            config.additionalUpdates.forEach(function (item) {
-	                                parallelUpdates.push(item());
-	                            });
-	                        }
-
-	                        _context2.next = 5;
-	                        return parallelUpdates;
-
-	                    case 5:
-	                        return _context2.abrupt('return', state);
-
-	                    case 6:
-	                    case 'end':
-	                        return _context2.stop();
-	                }
-	            }
-	        }, _callee2, this);
 	    }));
 	}
 
@@ -52605,7 +52548,7 @@ var gnosis =
 	var _promise2 = _interopRequireDefault(_promise);
 
 	exports.buyAllOutcomes = buyAllOutcomes;
-	exports.redeemAllOutcomes = redeemAllOutcomes;
+	exports.sellAllOutcomes = sellAllOutcomes;
 	exports.redeemWinnings = redeemWinnings;
 	exports.createOffChainEvent = createOffChainEvent;
 	exports.createEvent = createEvent;
@@ -52656,14 +52599,14 @@ var gnosis =
 
 	var _state = __webpack_require__(195);
 
-	var _abstractOracle = __webpack_require__(217);
+	var _oracle = __webpack_require__(217);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function buyAllOutcomes(eventHash, numShares, config, callback) {
-	  var contractInstance = config.web3.eth.contract(abi.events).at(config.addresses.events);
+	  var contractInstance = config.web3.eth.contract(abi.eventFactory).at(config.addresses.eventFactory);
 
 	  var args = [eventHash, numShares, (0, _transactions.txDefaults)(config)];
 
@@ -52677,21 +52620,21 @@ var gnosis =
 	   */
 
 
-	function redeemAllOutcomes(eventHash, numShares, config, callback) {
-	  var contractInstance = config.web3.eth.contract(abi.events).at(config.addresses.events);
+	function sellAllOutcomes(eventHash, numShares, config, callback) {
+	  var contractInstance = config.web3.eth.contract(abi.eventFactory).at(config.addresses.eventFactory);
 	  var args = [eventHash, numShares, (0, _transactions.txDefaults)(config)];
 	  var booleanSuccessTest = function booleanSuccessTest(res) {
 	    return res;
 	  };
 
-	  return (0, _transactions.callAndSendTransaction)(contractInstance.redeemAllOutcomes, "redeemAllOutcomes", args, config, (0, _transactions.errorOnFailure)('redeemAllOutcomes', booleanSuccessTest), callback);
+	  return (0, _transactions.callAndSendTransaction)(contractInstance.sellAllOutcomes, "sellAllOutcomes", args, config, (0, _transactions.errorOnFailure)('sellAllOutcomes', booleanSuccessTest), callback);
 	}
 
 	/**
 	 * Redeem shares for token after the winning outcome has been set for a market.
 	 */
 	function redeemWinnings(eventHash, config, callback) {
-	  var contractInstance = config.web3.eth.contract(abi.events).at(config.addresses.events);
+	  var contractInstance = config.web3.eth.contract(abi.eventFactory).at(config.addresses.eventFactory);
 	  var args = [eventHash, (0, _transactions.txDefaults)(config)];
 
 	  return (0, _transactions.callAndSendTransaction)(contractInstance.redeemWinnings, "redeemWinnings", args, config, (0, _transactions.errorOnFailure)('redeemWinnings'), callback);
@@ -52717,7 +52660,7 @@ var gnosis =
 	 */
 	function createEvent(event, descriptionHash, validationData, config, callback) {
 
-	  var contractInstance = config.web3.eth.contract(abi.events).at(config.addresses.events);
+	  var contractInstance = config.web3.eth.contract(abi.eventFactory).at(config.addresses.eventFactory);
 	  var bounds = { lowerBound: 0, upperBound: 0 };
 	  if (event.kind === constants.KIND_RANGED) {
 	    bounds.lowerBound = event.lowerBound;
@@ -52736,9 +52679,9 @@ var gnosis =
 	 * @param callback
 	 * @returns {Promise|Promise<T>}
 	 */
-	function getEventHashes(descriptionHashes, config, callback) {
-	  var contractInstance = config.web3.eth.contract(abi.events).at(config.addresses.events);
-	  return (0, _web3Batch.requestWithBlockNumber)(contractInstance.getEventHashes, descriptionHashes, 'latest', callback);
+	function getEventHashes(descriptionHashes, creators, config, callback) {
+	  var contractInstance = config.web3.eth.contract(abi.eventFactory).at(config.addresses.eventFactory);
+	  return (0, _web3Batch.requestWithBlockNumber)(contractInstance.getEventHashes, descriptionHashes, creators, 'latest', callback);
 	}
 
 	/**
@@ -52748,9 +52691,9 @@ var gnosis =
 	 * @param config
 	 * @returns {*}
 	 */
-	function getEventHashesProcessed(descriptionHashes, config) {
+	function getEventHashesProcessed(descriptionHashes, creators, config) {
 	  return new _promise2.default(function (resolve, reject) {
-	    getEventHashes(descriptionHashes, config, (0, _callbacks.promiseCallback)(resolve, reject)).call();
+	    getEventHashes(descriptionHashes, creators, config, (0, _callbacks.promiseCallback)(resolve, reject)).call();
 	  }).then(function (eventHashesResponse) {
 	    return new _promise2.default(function (resolve, reject) {
 	      var events = [];
@@ -52782,14 +52725,14 @@ var gnosis =
 	 * @param callback
 	 * @returns {Promise|Promise<T>}
 	 */
-	function getEvents(eventHashes, resolverAddress, tokenAddress, creatorAddress, config, callback) {
-	  var contractInstance = config.web3.eth.contract(abi.events).at(config.addresses.events);
-	  return (0, _web3Batch.requestWithBlockNumber)(contractInstance.getEvents, eventHashes, resolverAddress, tokenAddress, creatorAddress, 'latest', callback);
+	function getEvents(eventHashes, resolverAddress, tokenAddress, config, callback) {
+	  var contractInstance = config.web3.eth.contract(abi.eventFactory).at(config.addresses.eventFactory);
+	  return (0, _web3Batch.requestWithBlockNumber)(contractInstance.getEvents, eventHashes, resolverAddress, tokenAddress, 'latest', callback);
 	}
 
-	function getEventsProcessed(eventHashes, resolverAddress, tokenAddress, creatorAddress, config) {
+	function getEventsProcessed(eventHashes, resolverAddress, tokenAddress, config) {
 	  return new _promise2.default(function (resolve, reject) {
-	    getEvents(eventHashes, resolverAddress, tokenAddress, creatorAddress, config, (0, _callbacks.promiseCallback)(resolve, reject)).call();
+	    getEvents(eventHashes, resolverAddress, tokenAddress, config, (0, _callbacks.promiseCallback)(resolve, reject)).call();
 	  }).then(function (contractData) {
 	    return new _promise2.default(function (resolve, reject) {
 	      // Returned array have the following structure:
@@ -52805,33 +52748,33 @@ var gnosis =
 	        }
 
 	        var eventHash = hex.encode(contractData[eventIndex], 256);
-	        var isResolved = !contractData[eventIndex + 9].eq(0);
-	        var outcomeCount = contractData[eventIndex + 11].toNumber();
+	        var isResolved = !contractData[eventIndex + 8].eq(0);
+	        var outcomeCount = contractData[eventIndex + 10].toNumber();
 
 	        // tokenAddress, currencyHash should be null if is 0x0
 
 	        events[eventHash] = {
 	          eventHash: eventHash,
 	          descriptionHash: hex.encode(contractData[eventIndex + 1], 256),
-	          kind: contractData[eventIndex + 3].eq(0) ? constants.KIND_DISCRETE : constants.KIND_RANGED,
+	          kind: contractData[eventIndex + 2].eq(0) ? constants.KIND_DISCRETE : constants.KIND_RANGED,
 	          outcomeCount: outcomeCount,
-	          eventIdentifier: hex.encode(contractData[eventIndex + 8], 256),
-	          resolverAddress: hex.encode(contractData[eventIndex + 7], 160),
-	          tokenAddress: contractData[eventIndex + 6].eq(0) ? null : hex.encode(contractData[eventIndex + 6], 160),
-	          creatorAddress: hex.encode(contractData[eventIndex + 2], 160),
+	          eventIdentifier: hex.encode(contractData[eventIndex + 7], 256),
+	          resolverAddress: hex.encode(contractData[eventIndex + 6], 160),
+	          tokenAddress: contractData[eventIndex + 5].eq(0) ? null : hex.encode(contractData[eventIndex + 5], 160),
+	          // creatorAddress: hex.encode(contractData[eventIndex + 2], 160),
 	          isResolved: isResolved,
-	          winningOutcome: isResolved ? contractData[eventIndex + 10].toNumber() : null,
-	          tokens: contractData.slice(eventIndex + 12, eventIndex + 12 + outcomeCount).map(function (token) {
+	          winningOutcome: isResolved ? contractData[eventIndex + 9].toNumber() : null,
+	          tokens: contractData.slice(eventIndex + 11, eventIndex + 11 + outcomeCount).map(function (token) {
 	            return hex.encode(token, 160);
 	          })
 	        };
 
 	        if (events[eventHash].kind === constants.KIND_RANGED) {
-	          events[eventHash].lowerBound = contractData[eventIndex + 4];
-	          events[eventHash].upperBound = contractData[eventIndex + 5];
+	          events[eventHash].lowerBound = contractData[eventIndex + 3];
+	          events[eventHash].upperBound = contractData[eventIndex + 4];
 	        }
 
-	        eventIndex += 12 + outcomeCount;
+	        eventIndex += 11 + outcomeCount;
 	      }
 
 	      resolve(events);
@@ -52847,7 +52790,7 @@ var gnosis =
 	 * @returns {requestObject}
 	 */
 	function getEvent(eventHash, config, callback) {
-	  var contractInstance = config.web3.eth.contract(abi.events).at(config.addresses.events);
+	  var contractInstance = config.web3.eth.contract(abi.eventFactory).at(config.addresses.eventFactory);
 	  return (0, _web3Batch.requestWithBlockNumber)(contractInstance.getEvent, eventHash, 'latest', callback);
 	}
 
@@ -52860,7 +52803,7 @@ var gnosis =
 	 * @returns {Request}
 	 */
 	function getShares(forAddress, eventHashes, config, callback) {
-	  var contractInstance = config.web3.eth.contract(abi.events).at(config.addresses.events);
+	  var contractInstance = config.web3.eth.contract(abi.eventFactory).at(config.addresses.eventFactory);
 	  return (0, _web3Batch.requestWithBlockNumber)(contractInstance.getShares, forAddress, eventHashes, 'latest', callback);
 	}
 
@@ -52901,46 +52844,65 @@ var gnosis =
 	 * @param config
 	 */
 	function getBaseFee(config, callback) {
-	  var contractInstance = config.web3.eth.contract(abi.events).at(config.addresses.events);
+	  var contractInstance = config.web3.eth.contract(abi.eventFactory).at(config.addresses.eventFactory);
 	  return (0, _web3Batch.requestWithBlockNumber)(contractInstance.getBaseFee, 'latest', callback);
 	}
 
 	function calcBaseFeeForShares(shares, config) {
 	  return new _promise2.default(function (resolve, reject) {
-	    // use the state if available
-	    var baseFee = (0, _state.get)(config).baseFee;
-
-	    if (baseFee) {
-	      resolve(baseFee);
-	    } else {
-	      getBaseFee(config, function (e, baseFee) {
-	        resolve(baseFee);
-	      }).call();
-	    }
-	  }).then(function (baseFee) {
-	    return shares.mul("1000000").div(new _bignumber2.default("1000000").minus(baseFee)).minus(shares);
+	    var contractInstance = config.web3.eth.contract(abi.eventFactory).at(config.addresses.eventFactory);
+	    (0, _web3Batch.requestWithBlockNumber)(contractInstance.calcBaseFeeForShares, shares, 'latest', (0, _callbacks.promiseCallback)(resolve, reject)).call();
 	  });
+	  // return new Promise((resolve, reject) =>
+	  // {
+	  //     // use the state if available
+	  //     let baseFee = get(config).baseFee;
+	  //
+	  //     if(baseFee){
+	  //         resolve(baseFee);
+	  //     }
+	  //     else{
+	  //         getBaseFee(config, (e, baseFee) =>
+	  //         {
+	  //             resolve(baseFee);
+	  //         }).call();
+	  //     }
+	  //
+	  // }).then((baseFee) => {
+	  //     return shares
+	  //     .mul("1000000")
+	  //     .div(
+	  //       new BigNumber("1000000").minus(baseFee)
+	  //     ).minus(shares);
+	  // });
 	}
 
 	function calcBaseFee(amount, config) {
 	  return new _promise2.default(function (resolve, reject) {
-	    // use the state if available
-	    var baseFee = (0, _state.get)(config).baseFee;
-
-	    if (baseFee) {
-	      resolve(baseFee);
-	    } else {
-	      getBaseFee(config, function (e, baseFee) {
-	        resolve(baseFee);
-	      }).call();
-	    }
-	  }).then(function (baseFee) {
-	    return amount.mul(baseFee).div(new _bignumber2.default("1000000")).floor();
+	    var contractInstance = config.web3.eth.contract(abi.eventFactory).at(config.addresses.eventFactory);
+	    (0, _web3Batch.requestWithBlockNumber)(contractInstance.calcBaseFee, amount, 'latest', (0, _callbacks.promiseCallback)(resolve, reject)).call();
 	  });
+	  // return new Promise((resolve, reject) =>
+	  // {
+	  //     // use the state if available
+	  //     let baseFee = get(config).baseFee;
+	  //
+	  //     if(baseFee){
+	  //         resolve(baseFee);
+	  //     }
+	  //     else{
+	  //         getBaseFee(config, (e, baseFee) =>
+	  //         {
+	  //             resolve(baseFee);
+	  //         }).call();
+	  //     }
+	  // }).then((baseFee) => {
+	  //     return amount.mul(baseFee).div(new BigNumber("1000000")).floor();
+	  // });
 	}
 
 	function permitPermanentApproval(spender, config, callback) {
-	  var contractInstance = config.web3.eth.contract(abi.events).at(config.addresses.events);
+	  var contractInstance = config.web3.eth.contract(abi.eventFactory).at(config.addresses.eventFactory);
 	  var args = [spender, (0, _transactions.txDefaults)(config)];
 
 	  var booleanSuccessTest = function booleanSuccessTest(res) {
@@ -52950,7 +52912,7 @@ var gnosis =
 	}
 
 	function isPermanentlyApproved(owner, spender, config, callback) {
-	  var contractInstance = config.web3.eth.contract(abi.events).at(config.addresses.events);
+	  var contractInstance = config.web3.eth.contract(abi.eventFactory).at(config.addresses.eventFactory);
 
 	  return (0, _web3Batch.requestWithBlockNumber)(contractInstance.isPermanentlyApproved, owner, spender, 'latest', callback);
 	}
@@ -52971,7 +52933,7 @@ var gnosis =
 	}
 
 	function revokePermanentApproval(allowedAddress, config, callback) {
-	  var contractInstance = config.web3.eth.contract(abi.events).at(config.addresses.events);
+	  var contractInstance = config.web3.eth.contract(abi.eventFactory).at(config.addresses.eventFactory);
 	  var args = [allowedAddress, (0, _transactions.txDefaults)(config)];
 
 	  var booleanSuccessTest = function booleanSuccessTest(res) {
@@ -53366,6 +53328,7 @@ var gnosis =
 	exports.outcomeIdentifier = outcomeIdentifier;
 	exports.getEventIdentifiers = getEventIdentifiers;
 	exports.signWithDescription = signWithDescription;
+	exports.signOracleFee = signOracleFee;
 	exports.signMsg = signMsg;
 	exports.outcomeHash = outcomeHash;
 	exports.decodeSignature = decodeSignature;
@@ -53482,6 +53445,31 @@ var gnosis =
 	    });
 	}
 
+	/**
+	* Generates the signature expected to subscribe an oracle to one concrete event.
+	* @param fee: bigNumber. Represents the fee oracle charges event creator for resolving
+	*       the event.
+	* @param feeToken: bigNumber|hexString. Token address used to charge oracle fees.
+	* @param descriptionHash: hexString. Hash that identifies the event description.
+	**/
+	function signOracleFee(oracleAddress, descriptionHash, fee, feeToken, config) {
+	    var feeHash = crypto.evmKeccak(descriptionHash, hex.encode(fee, 256), feeToken);
+
+	    return new _promise2.default(function (resolve, reject) {
+	        config.web3.eth.sign(oracleAddress, feeHash, (0, _callbacks.promiseCallback)(resolve, reject));
+	    }).then(function (signature) {
+	        var decodedSignature = decodeSignature(signature);
+	        return new _promise2.default(function (resolve, reject) {
+	            resolve((0, _assign2.default)({
+	                fee: fee,
+	                feeToken: feeToken,
+	                address: oracleAddress,
+	                descriptionHash: descriptionHash
+	            }, decodedSignature));
+	        });
+	    });
+	}
+
 	function signMsg(account, message, config) {
 	    var msgHash = '0x' + _cryptoJs2.default.SHA3(message, { outputLength: 256 }).toString(_cryptoJs2.default.enc.hex);
 
@@ -53520,9 +53508,9 @@ var gnosis =
 
 	    var validationData = _lodash2.default.flatten(feeSignatures.map(function (feeSignature, index) {
 	        if (index) {
-	            return [feeSignature.message, feeSignature.v, feeSignature.r, feeSignature.s];
+	            return [feeSignature.fee, new _bignumber2.default(feeSignature.feeToken), feeSignature.v, feeSignature.r, feeSignature.s];
 	        } else {
-	            return [new _bignumber2.default(feeSignature.descriptionHash), feeSignature.message, feeSignature.v, feeSignature.r, feeSignature.s];
+	            return [new _bignumber2.default(feeSignature.descriptionHash), feeSignature.fee, new _bignumber2.default(feeSignature.feeToken), feeSignature.v, feeSignature.r, feeSignature.s];
 	        }
 	    }));
 
@@ -53701,11 +53689,11 @@ var gnosis =
 	        var r = new Buffer(hex.encode(new _bignumber2.default(fee.r), 256).slice(2), 'hex');
 	        var s = new Buffer(hex.encode(new _bignumber2.default(fee.s), 256).slice(2), 'hex');
 
-	        var address = '0x' + _ethLightwallet.signing.recoverAddress(descriptionHash + hex.encode(fee.message, 256).slice(2), v, r, s).toString('hex');
+	        var address = '0x' + _ethLightwallet.signing.recoverAddress(descriptionHash + hex.encode(fee.fee, 256).slice(2), v, r, s).toString('hex');
 
 	        if (address == fee.address) {
 	            // Check feeSignature
-	            return fee.message.add(new _bignumber2.default(acc));
+	            return fee.fee.add(new _bignumber2.default(acc));
 	        } else {
 	            return acc;
 	        }
@@ -114453,7 +114441,7 @@ var gnosis =
 
 	var _bignumber2 = _interopRequireDefault(_bignumber);
 
-	var _events = __webpack_require__(206);
+	var _eventFactory = __webpack_require__(206);
 
 	var _co = __webpack_require__(418);
 
@@ -114486,9 +114474,9 @@ var gnosis =
 	    marketAddress = args.pop();
 
 	    if (!marketAddress) {
-	        marketAddress = config.addresses.defaultMarket;
+	        marketAddress = config.addresses.defaultMarketFactory;
 	    }
-	    var contractInstance = config.web3.eth.contract(abi.market).at(marketAddress);
+	    var contractInstance = config.web3.eth.contract(abi.marketFactory).at(marketAddress);
 
 	    var transactionArgs = [eventHash, market.fee, market.initialFunding, market.makerAddress, (0, _transactions.txDefaults)(config)];
 
@@ -114515,9 +114503,9 @@ var gnosis =
 	    marketAddress = args.pop();
 
 	    if (!marketAddress) {
-	        marketAddress = config.addresses.defaultMarket;
+	        marketAddress = config.addresses.defaultMarketFactory;
 	    }
-	    var contractInstance = config.web3.eth.contract(abi.market).at(marketAddress);
+	    var contractInstance = config.web3.eth.contract(abi.marketFactory).at(marketAddress);
 	    var transactionArgs = [marketHash, (0, _transactions.txDefaults)(config)];
 
 	    var booleanSuccessTest = function booleanSuccessTest(res) {
@@ -114534,27 +114522,27 @@ var gnosis =
 	 * @param callback
 	 * @returns {Promise|Promise<T>}
 	 */
-	function getMarketHashes(eventHashes, config) {
-	    for (var _len3 = arguments.length, args = Array(_len3 > 2 ? _len3 - 2 : 0), _key3 = 2; _key3 < _len3; _key3++) {
-	        args[_key3 - 2] = arguments[_key3];
+	function getMarketHashes(eventHashes, investors, config) {
+	    for (var _len3 = arguments.length, args = Array(_len3 > 3 ? _len3 - 3 : 0), _key3 = 3; _key3 < _len3; _key3++) {
+	        args[_key3 - 3] = arguments[_key3];
 	    }
 
 	    var callback = args.pop();
 	    var marketAddress = args.pop();
 
 	    if (!marketAddress) {
-	        marketAddress = config.addresses.defaultMarket;
+	        marketAddress = config.addresses.defaultMarketFactory;
 	    }
-	    var contractInstance = config.web3.eth.contract(abi.market).at(marketAddress);
-	    return (0, _web3Batch.requestWithBlockNumber)(contractInstance.getMarketHashes, eventHashes, 'latest', callback);
+	    var contractInstance = config.web3.eth.contract(abi.marketFactory).at(marketAddress);
+	    return (0, _web3Batch.requestWithBlockNumber)(contractInstance.getMarketHashes, eventHashes, investors, 'latest', callback);
 	}
 
-	function getMarketHashesProcessed(eventHashes, config, marketAddress) {
+	function getMarketHashesProcessed(eventHashes, investors, config, marketAddress) {
 	    if (!marketAddress) {
-	        marketAddress = config.addresses.defaultMarket;
+	        marketAddress = config.addresses.defaultMarketFactory;
 	    }
 	    return new _promise2.default(function (resolve, reject) {
-	        getMarketHashes(eventHashes, config, marketAddress, (0, _callbacks.promiseCallback)(resolve, reject)).call();
+	        getMarketHashes(eventHashes, investors, config, marketAddress, (0, _callbacks.promiseCallback)(resolve, reject)).call();
 	    }).then(function (marketHashesResponse) {
 	        return new _promise2.default(function (resolve, reject) {
 	            var marketHashes = [];
@@ -114591,9 +114579,9 @@ var gnosis =
 	    var marketAddress = args.pop();
 
 	    if (!marketAddress) {
-	        marketAddress = config.addresses.defaultMarket;
+	        marketAddress = config.addresses.defaultMarketFactory;
 	    }
-	    var contractInstance = config.web3.eth.contract(abi.market).at(marketAddress);
+	    var contractInstance = config.web3.eth.contract(abi.marketFactory).at(marketAddress);
 	    return (0, _web3Batch.requestWithBlockNumber)(contractInstance.getMarket, marketHash, 'latest', callback);
 	}
 
@@ -114607,13 +114595,13 @@ var gnosis =
 	    var investorAddress = args.pop();
 
 	    if (!marketAddress) {
-	        marketAddress = config.addresses.defaultMarket;
+	        marketAddress = config.addresses.defaultMarketFactory;
 	    }
 	    if (!investorAddress) {
 	        investorAddress = config.addressFilters.investor;
 	    }
 
-	    var contractInstance = config.web3.eth.contract(abi.market).at(marketAddress);
+	    var contractInstance = config.web3.eth.contract(abi.marketFactory).at(marketAddress);
 	    return (0, _web3Batch.requestWithBlockNumber)(contractInstance.getMarkets, marketHashes, investorAddress, 'latest', callback);
 	}
 
@@ -114626,7 +114614,7 @@ var gnosis =
 	    var investorAddress = args.pop();
 
 	    if (!marketAddress) {
-	        marketAddress = config.addresses.defaultMarket;
+	        marketAddress = config.addresses.defaultMarketFactory;
 	    }
 	    if (!investorAddress) {
 	        investorAddress = config.addressFilters.investor;
@@ -114679,9 +114667,9 @@ var gnosis =
 	    marketAddress = args.pop();
 
 	    if (!marketAddress) {
-	        marketAddress = config.addresses.defaultMarket;
+	        marketAddress = config.addresses.defaultMarketFactory;
 	    }
-	    var contractInstance = config.web3.eth.contract(abi.market).at(marketAddress);
+	    var contractInstance = config.web3.eth.contract(abi.marketFactory).at(marketAddress);
 	    var transactionArgs = [marketHash, (0, _transactions.txDefaults)(config)];
 
 	    return (0, _transactions.callAndSendTransaction)(contractInstance.withdrawFees, "withdrawFees", transactionArgs, config, (0, _transactions.errorOnFailure)('withdrawFees'), callback);
@@ -114696,9 +114684,9 @@ var gnosis =
 	    var marketAddress = args.pop();
 
 	    if (!marketAddress) {
-	        marketAddress = config.addresses.defaultMarket;
+	        marketAddress = config.addresses.defaultMarketFactory;
 	    }
-	    var contractInstance = config.web3.eth.contract(abi.market).at(marketAddress);
+	    var contractInstance = config.web3.eth.contract(abi.marketFactory).at(marketAddress);
 	    return (0, _web3Batch.requestWithBlockNumber)(contractInstance.getShareDistribution, marketHash, blockNumber, callback);
 	}
 
@@ -114711,9 +114699,9 @@ var gnosis =
 	    var marketAddress = args.pop();
 
 	    if (!marketAddress) {
-	        marketAddress = config.addresses.defaultMarket;
+	        marketAddress = config.addresses.defaultMarketFactory;
 	    }
-	    var contractInstance = config.web3.eth.contract(abi.market).at(marketAddress);
+	    var contractInstance = config.web3.eth.contract(abi.marketFactory).at(marketAddress);
 	    return (0, _web3Batch.requestWithBlockNumber)(contractInstance.getShareDistributionWithTimestamp, marketHash, blockNumber, callback);
 	}
 
@@ -114741,9 +114729,9 @@ var gnosis =
 	    marketAddress = args.pop();
 
 	    if (!marketAddress) {
-	        marketAddress = config.addresses.defaultMarket;
+	        marketAddress = config.addresses.defaultMarketFactory;
 	    }
-	    var contractInstance = config.web3.eth.contract(abi.market).at(marketAddress);
+	    var contractInstance = config.web3.eth.contract(abi.marketFactory).at(marketAddress);
 
 	    var transactionArgs = [marketHash, outcomeIndex, numShares, maxTotalPrice, (0, _transactions.txDefaults)(config)];
 
@@ -114768,9 +114756,9 @@ var gnosis =
 	    marketAddress = args.pop();
 
 	    if (!marketAddress) {
-	        marketAddress = config.addresses.defaultMarket;
+	        marketAddress = config.addresses.defaultMarketFactory;
 	    }
-	    var contractInstance = config.web3.eth.contract(abi.market).at(marketAddress);
+	    var contractInstance = config.web3.eth.contract(abi.marketFactory).at(marketAddress);
 
 	    var txArgs = [marketHash, outcomeIndex, numShares, minTotalPrice, (0, _transactions.txDefaults)(config)];
 
@@ -114779,7 +114767,7 @@ var gnosis =
 
 	function calcMarketFee(marketHash, amount, config, marketAddress) {
 	    if (!marketAddress) {
-	        marketAddress = config.addresses.defaultMarket;
+	        marketAddress = config.addresses.defaultMarketFactory;
 	    }
 	    var markets = (0, _state.get)(config).markets;
 
@@ -114810,9 +114798,9 @@ var gnosis =
 	    marketAddress = args.pop();
 
 	    if (!marketAddress) {
-	        marketAddress = config.addresses.defaultMarket;
+	        marketAddress = config.addresses.defaultMarketFactory;
 	    }
-	    var contractInstance = config.web3.eth.contract(abi.market).at(marketAddress);
+	    var contractInstance = config.web3.eth.contract(abi.marketFactory).at(marketAddress);
 	    var transactionArgs = [marketHash, outcomeIndex, numberOfShares, moneyToEarn, (0, _transactions.txDefaults)(config)];
 	    return (0, _transactions.callAndSendTransaction)(contractInstance.shortSellShares, "shortSellShares", transactionArgs, config, (0, _transactions.errorOnFailure)('shortSellShares'), callback);
 	}
@@ -115085,13 +115073,13 @@ var gnosis =
 
 	var _web3Batch = __webpack_require__(210);
 
-	var _events = __webpack_require__(206);
+	var _eventFactory = __webpack_require__(206);
 
-	var events = _interopRequireWildcard(_events);
+	var eventFactory = _interopRequireWildcard(_eventFactory);
 
-	var _abstractMarket = __webpack_require__(417);
+	var _marketFactory = __webpack_require__(417);
 
-	var market = _interopRequireWildcard(_abstractMarket);
+	var marketFactory = _interopRequireWildcard(_marketFactory);
 
 	var _marketMaker = __webpack_require__(420);
 
@@ -115148,7 +115136,7 @@ var gnosis =
 	    }
 
 	    if (!marketAddress) {
-	        marketAddress = config.addresses.defaultMarket;
+	        marketAddress = config.addresses.defaultMarketFactory;
 	    }
 
 	    return new _promise2.default(function (resolve, reject) {
@@ -115160,7 +115148,7 @@ var gnosis =
 	            resolve(stateMarket);
 	        } else {
 	            // Get market info from blockchain
-	            market.getMarketsProcessed([marketHash], config, config.account, marketAddress).then(function (marketsProcessed) {
+	            marketFactory.getMarketsProcessed([marketHash], config, config.account, marketAddress).then(function (marketsProcessed) {
 	                if (marketsProcessed.length) {
 	                    resolve(marketsProcessed[0]);
 	                } else {
@@ -115172,9 +115160,9 @@ var gnosis =
 	        var initialFunding = marketObject.initialFunding;
 	        var shareDistribution = marketObject.shares;
 	        // get base fee
-	        return events.calcBaseFeeForShares(numberOfShares, config).then(function (baseFee) {
+	        return eventFactory.calcBaseFeeForShares(numberOfShares, config).then(function (baseFee) {
 	            return calcCostsBuying(marketHash, initialFunding, shareDistribution, outcomeIndex, numberOfShares, config, marketMakerAddress, function (e, costs) {
-	                return market.calcMarketFee(marketHash, costs, config, marketAddress).then(function (marketFee) {
+	                return marketFactory.calcMarketFee(marketHash, costs, config, marketAddress).then(function (marketFee) {
 	                    var costsWithFees = costs.plus(baseFee).plus(marketFee);
 	                    if (callback) {
 	                        callback(null, costsWithFees);
@@ -115228,7 +115216,7 @@ var gnosis =
 	    }
 
 	    if (!marketAddress) {
-	        marketAddress = config.addresses.defaultMarket;
+	        marketAddress = config.addresses.defaultMarketFactory;
 	    }
 
 	    return new _promise2.default(function (resolve, reject) {
@@ -115240,7 +115228,7 @@ var gnosis =
 	            resolve(stateMarket);
 	        } else {
 	            // Get market info from blockchain
-	            market.getMarketsProcessed([marketHash], config, config.account, marketAddress).then(function (marketsProcessed) {
+	            marketFactory.getMarketsProcessed([marketHash], config, config.account, marketAddress).then(function (marketsProcessed) {
 	                if (marketsProcessed.length) {
 	                    resolve(marketsProcessed[0]);
 	                } else {
@@ -115252,7 +115240,7 @@ var gnosis =
 	        var initialFunding = marketObject.initialFunding;
 	        var shareDistribution = marketObject.shares;
 	        calcEarningsSelling(marketHash, initialFunding, shareDistribution, outcomeIndex, numberOfShares, config, marketMakerAddress, function (e, earnings) {
-	            market.calcMarketFee(marketHash, earnings, config, marketAddress).then(function (marketFee) {
+	            marketFactory.calcMarketFee(marketHash, earnings, config, marketAddress).then(function (marketFee) {
 	                callback(null, earnings.minus(marketFee));
 	            });
 	        }).call();
@@ -115281,13 +115269,13 @@ var gnosis =
 
 	var _bignumber2 = _interopRequireDefault(_bignumber);
 
-	var _events = __webpack_require__(206);
+	var _eventFactory = __webpack_require__(206);
 
-	var events = _interopRequireWildcard(_events);
+	var eventFactory = _interopRequireWildcard(_eventFactory);
 
-	var _abstractMarket = __webpack_require__(417);
+	var _marketFactory = __webpack_require__(417);
 
-	var market = _interopRequireWildcard(_abstractMarket);
+	var marketFactory = _interopRequireWildcard(_marketFactory);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -115437,9 +115425,9 @@ var gnosis =
 
 	function calcCostsBuyingWithFees(marketHash, initial_funding, share_distribution, selected_outcome, shares_wanted, config) {
 	  // get base fee
-	  events.calcBaseFeeForShares(shares_wanted, config).then(function (baseFee) {
+	  eventFactory.calcBaseFeeForShares(shares_wanted, config).then(function (baseFee) {
 	    var costs = calcCostsBuying(initial_funding, share_distribution, selected_outcome, shares_wanted);
-	    return market.calcMarketFee(marketHash, costs, config, config.addresses.lmsrMarketMaker).then(function (marketFee) {
+	    return marketFactory.calcMarketFee(marketHash, costs, config, config.addresses.lmsrMarketMaker).then(function (marketFee) {
 	      return costs.plus(baseFee).plus(marketFee);
 	    });
 	  });
@@ -115460,7 +115448,7 @@ var gnosis =
 
 	function calcEarningsSellingWithFees(marketHash, initial_funding, share_distribution, selected_outcome, shares_wanted, config) {
 	  var earnings = calcEarningsSelling(initial_funding, share_distribution, selected_outcome, shares_wanted);
-	  return market.calcMarketFee(marketHash, earnings, config, config.addresses.lmsrMarketMaker).then(function (marketFee) {
+	  return marketFactory.calcMarketFee(marketHash, earnings, config, config.addresses.lmsrMarketMaker).then(function (marketFee) {
 	    return earnings.min(marketFee);
 	  });
 	}
@@ -115532,7 +115520,7 @@ var gnosis =
 
 	    return new _promise2.default(function (resolve, reject) {
 	        if (event.fee) {
-	            return (0, _helpers.signWithDescription)(oracleAddress, event.fee, ids.descriptionHash, config).then(resolve);
+	            return (0, _helpers.signOracleFee)(oracleAddress, ids.descriptionHash, event.fee, event.feeToken, config).then(resolve);
 	        } else {
 	            try {
 	                return (0, _helpers.signMsg)(oracleAddress, ids.descriptionJSON, config).then(resolve);
@@ -115558,6 +115546,7 @@ var gnosis =
 
 	        if (event.fee) {
 	            payload.fee = event.fee.toString(10);
+	            payload.feeToken = event.feeToken;
 	        }
 
 	        return _axios2.default.post(url, payload).catch(function (response) {
@@ -115581,9 +115570,9 @@ var gnosis =
 	 * Created by denisgranha on 11/4/16.
 	 */
 
-	function subscribeOracleToEvent(givenFee, descriptionHash, oracleAddress, email, config) {
+	function subscribeOracleToEvent(fee, feeToken, descriptionHash, oracleAddress, email, config) {
 	    var url = config.gnosisServiceURL + 'event/oracle/';
-	    return (0, _helpers.signWithDescription)(oracleAddress, givenFee, descriptionHash, config).then(function (messageSignature) {
+	    return (0, _helpers.signOracleFee)(oracleAddress, descriptionHash, fee, feeToken, config).then(function (messageSignature) {
 	        var message = messageSignature.message;
 	        var v = messageSignature.v;
 	        var r = messageSignature.r;
@@ -115598,7 +115587,8 @@ var gnosis =
 	                address: oracleAddress
 	            },
 	            descriptionHash: descriptionHash,
-	            fee: message.toString(10),
+	            fee: fee.toString(10),
+	            feeToken: feeToken,
 	            email: email
 	        };
 
@@ -117505,9 +117495,9 @@ var gnosis =
 
 	var _bignumber2 = _interopRequireDefault(_bignumber);
 
-	var _events = __webpack_require__(206);
+	var _eventFactory = __webpack_require__(206);
 
-	var eventToken = _interopRequireWildcard(_events);
+	var eventFactory = _interopRequireWildcard(_eventFactory);
 
 	var _state = __webpack_require__(195);
 
@@ -117585,22 +117575,22 @@ var gnosis =
 	    }, {
 	        key: 'buyAllOutcomes',
 	        value: function buyAllOutcomes(numShares, callback) {
-	            return eventToken.buyAllOutcomes(this.eventHash, numShares, this.state.config, callback);
+	            return eventFactory.buyAllOutcomes(this.eventHash, numShares, this.state.config, callback);
 	        }
 	    }, {
 	        key: 'redeemWinnings',
 	        value: function redeemWinnings(callback) {
-	            return eventToken.redeemWinnings(this.eventHash, this.state.config, callback);
+	            return eventFactory.redeemWinnings(this.eventHash, this.state.config, callback);
 	        }
 	    }, {
-	        key: 'redeemAllOutcomes',
-	        value: function redeemAllOutcomes(numShares, callback) {
-	            return eventToken.redeemAllOutcomes(this.eventHash, numShares, this.state.config, callback);
+	        key: 'sellAllOutcomes',
+	        value: function sellAllOutcomes(numShares, callback) {
+	            return eventFactory.sellAllOutcomes(this.eventHash, numShares, this.state.config, callback);
 	        }
 	    }, {
 	        key: 'update',
 	        value: function update() {
-	            return (0, _state.updateEvents)(this.state.config, this.resolverAddress, [this.eventHash]);
+	            return (0, _state.updateEvents)(this.state.config, null, this.resolverAddress, this.tokenAddress, [this.eventHash]);
 	        }
 	    }]);
 	    return Event;
@@ -117661,13 +117651,13 @@ var gnosis =
 
 	var _bignumber2 = _interopRequireDefault(_bignumber);
 
-	var _abstractMarketMaker = __webpack_require__(419);
+	var _marketMaker = __webpack_require__(419);
 
-	var marketMaker = _interopRequireWildcard(_abstractMarketMaker);
+	var marketMaker = _interopRequireWildcard(_marketMaker);
 
-	var _abstractMarket = __webpack_require__(417);
+	var _marketFactory = __webpack_require__(417);
 
-	var marketContract = _interopRequireWildcard(_abstractMarket);
+	var marketFactory = _interopRequireWildcard(_marketFactory);
 
 	var _state = __webpack_require__(195);
 
@@ -117788,27 +117778,27 @@ var gnosis =
 		}, {
 			key: 'buyShares',
 			value: function buyShares(outcomeIndex, numShares, maxTotalPrice, callback) {
-				return marketContract.buyShares(this.marketHash, outcomeIndex, numShares, maxTotalPrice, this.state.config, this.marketAddress, callback);
+				return marketFactory.buyShares(this.marketHash, outcomeIndex, numShares, maxTotalPrice, this.state.config, this.marketAddress, callback);
 			}
 		}, {
 			key: 'sellShares',
 			value: function sellShares(outcomeIndex, numShares, minTotalPrice, callback) {
-				return marketContract.sellShares(this.marketHash, outcomeIndex, numShares, minTotalPrice, this.state.config, this.marketAddress, callback);
+				return marketFactory.sellShares(this.marketHash, outcomeIndex, numShares, minTotalPrice, this.state.config, this.marketAddress, callback);
 			}
 		}, {
 			key: 'withdrawFees',
 			value: function withdrawFees(callback) {
-				return marketContract.withdrawFees(this.marketHash, this.state.config, this.marketAddress, callback);
+				return marketFactory.withdrawFees(this.marketHash, this.state.config, this.marketAddress, callback);
 			}
 		}, {
 			key: 'shortSellShares',
 			value: function shortSellShares(outcomeIndex, numShares, moneyToEarn, callback) {
-				return marketContract.shortSellShares(this.marketHash, outcomeIndex, numShares, moneyToEarn, this.state.config, this.marketAddress, callback);
+				return marketFactory.shortSellShares(this.marketHash, outcomeIndex, numShares, moneyToEarn, this.state.config, this.marketAddress, callback);
 			}
 		}, {
 			key: 'update',
 			value: function update() {
-				return (0, _state.updateMarkets)(this.state.config, this.makerAddress, this.investorAddress, [this.marketHash]);
+				return (0, _state.updateMarkets)(this.state.config, [this.investorAddress], this.marketAddress, [this.marketHash]);
 			}
 		}]);
 		return Market;
@@ -117909,17 +117899,17 @@ var gnosis =
 	  value: true
 	});
 
-	var _events = __webpack_require__(206);
+	var _eventFactory = __webpack_require__(206);
 
-	var events = _interopRequireWildcard(_events);
+	var eventFactory = _interopRequireWildcard(_eventFactory);
 
-	var _abstractMarketMaker = __webpack_require__(419);
+	var _marketMaker = __webpack_require__(419);
 
-	var marketMaker = _interopRequireWildcard(_abstractMarketMaker);
+	var marketMaker = _interopRequireWildcard(_marketMaker);
 
-	var _abstractOracle = __webpack_require__(217);
+	var _oracle = __webpack_require__(217);
 
-	var oracle = _interopRequireWildcard(_abstractOracle);
+	var oracle = _interopRequireWildcard(_oracle);
 
 	var _ultimateOracle = __webpack_require__(460);
 
@@ -117929,26 +117919,29 @@ var gnosis =
 
 	var hunchGameToken = _interopRequireWildcard(_hunchGameToken);
 
-	var _abstractMarket = __webpack_require__(417);
+	var _hunchGameMarketFactory = __webpack_require__(462);
 
-	var market = _interopRequireWildcard(_abstractMarket);
+	var hunchGameMarketFactory = _interopRequireWildcard(_hunchGameMarketFactory);
 
-	var _abstractToken = __webpack_require__(416);
+	var _marketFactory = __webpack_require__(417);
 
-	var abstractToken = _interopRequireWildcard(_abstractToken);
+	var marketFactory = _interopRequireWildcard(_marketFactory);
 
-	var _etherToken = __webpack_require__(462);
+	var _token = __webpack_require__(416);
+
+	var token = _interopRequireWildcard(_token);
+
+	var _etherToken = __webpack_require__(463);
 
 	var etherToken = _interopRequireWildcard(_etherToken);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-	/**
-	 * Created by denisgranha on 8/4/16.
-	 */
+	exports.default = { eventFactory: eventFactory, marketMaker: marketMaker, oracle: oracle, ultimateOracle: ultimateOracle,
+	  hunchGameToken: hunchGameToken, hunchGameMarketFactory: hunchGameMarketFactory, marketFactory: marketFactory, token: token, etherToken: etherToken }; /**
+	                                                                                                                                                         * Created by denisgranha on 8/4/16.
+	                                                                                                                                                         */
 
-	exports.default = { events: events, marketMaker: marketMaker, oracle: oracle, ultimateOracle: ultimateOracle, hunchGameToken: hunchGameToken, market: market,
-	  abstractToken: abstractToken, etherToken: etherToken };
 	module.exports = exports['default'];
 
 /***/ },
@@ -117965,17 +117958,13 @@ var gnosis =
 
 	var _promise2 = _interopRequireDefault(_promise);
 
-	var _assign = __webpack_require__(201);
-
-	var _assign2 = _interopRequireDefault(_assign);
-
 	exports.getOracleOutcomes = getOracleOutcomes;
-	exports.challengeWinningOutcome = challengeWinningOutcome;
+	exports.challengeOracle = challengeOracle;
 	exports.getShares = getShares;
 	exports.setUltimateOutcome = setUltimateOutcome;
 	exports.voteForUltimateOutcome = voteForUltimateOutcome;
 	exports.getUltimateOutcomes = getUltimateOutcomes;
-	exports.withdraw = withdraw;
+	exports.redeemWinnings = redeemWinnings;
 	exports.setOutcome = setOutcome;
 	exports.setOutcomeWithSignature = setOutcomeWithSignature;
 
@@ -118015,15 +118004,15 @@ var gnosis =
 	  return (0, _web3Batch.requestWithBlockNumber)(contractInstance.getOracleOutcomes, descriptionHashes, oracleAddresses, 'latest', callback);
 	}
 
-	function challengeWinningOutcome(descriptionHash, outcome, challengeAmount, config, callback) {
+	function challengeOracle(descriptionHash, oracle, outcome, config, callback) {
 	  var contractInstance = config.web3.eth.contract(abi.ultimateOracle).at(config.addresses.ultimateOracle);
 
-	  var args = [descriptionHash, outcome, (0, _assign2.default)({ value: challengeAmount }, (0, _transactions.txDefaults)(config))];
+	  var args = [descriptionHash, oracle, outcome, (0, _transactions.txDefaults)(config)];
 
 	  var booleanSuccessTest = function booleanSuccessTest(res) {
 	    return res;
 	  };
-	  return (0, _transactions.callAndSendTransaction)(contractInstance.challengeWinningOutcome, "challengeWinningOutcome", args, config, (0, _transactions.errorOnFailure)('challengeWinningOutcome', booleanSuccessTest), callback);
+	  return (0, _transactions.callAndSendTransaction)(contractInstance.challengeOracle, "challengeOracle", args, config, (0, _transactions.errorOnFailure)('challengeOracle', booleanSuccessTest), callback);
 	}
 
 	function getShares(forAddress, descriptionHashes, outcomes, config, callback) {
@@ -118045,7 +118034,7 @@ var gnosis =
 	function voteForUltimateOutcome(descriptionHash, outcome, voteValue, config, callback) {
 	  var contractInstance = config.web3.eth.contract(abi.ultimateOracle).at(config.addresses.ultimateOracle);
 
-	  var args = [descriptionHash, outcome, (0, _assign2.default)({ value: voteValue }, (0, _transactions.txDefaults)(config))];
+	  var args = [descriptionHash, outcome, voteValue, (0, _transactions.txDefaults)(config)];
 
 	  var booleanSuccessTest = function booleanSuccessTest(res) {
 	    return res;
@@ -118053,12 +118042,12 @@ var gnosis =
 	  return (0, _transactions.callAndSendTransaction)(contractInstance.voteForUltimateOutcome, "voteForUltimateOutcome", args, config, (0, _transactions.errorOnFailure)('voteForUltimateOutcome', booleanSuccessTest), callback);
 	}
 
-	function getUltimateOutcomes(descriptionHashes, config, callback) {
+	function getUltimateOutcomes(descriptionHashes, outcomes, config, callback) {
 	  var contractInstance = config.web3.eth.contract(abi.ultimateOracle).at(config.addresses.ultimateOracle);
-	  return (0, _web3Batch.requestWithBlockNumber)(contractInstance.getUltimateOutcomes, descriptionHashes, 'latest', callback);
+	  return (0, _web3Batch.requestWithBlockNumber)(contractInstance.getUltimateOutcomes, descriptionHashes, outcomes, 'latest', callback);
 	}
 
-	function withdraw(descriptionHash, config, callback) {
+	function redeemWinnings(descriptionHash, config, callback) {
 	  var contractInstance = config.web3.eth.contract(abi.ultimateOracle).at(config.addresses.ultimateOracle);
 
 	  var args = [descriptionHash, (0, _transactions.txDefaults)(config)];
@@ -118066,7 +118055,7 @@ var gnosis =
 	  var booleanSuccessTest = function booleanSuccessTest(res) {
 	    return res;
 	  };
-	  return (0, _transactions.callAndSendTransaction)(contractInstance.withdraw, "withdraw", args, config, (0, _transactions.errorOnFailure)('withdraw', booleanSuccessTest), callback);
+	  return (0, _transactions.callAndSendTransaction)(contractInstance.redeemWinnings, "redeemWinnings", args, config, (0, _transactions.errorOnFailure)('redeemWinnings', booleanSuccessTest), callback);
 	}
 
 	/**
@@ -118129,6 +118118,39 @@ var gnosis =
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.setup = setup;
+
+	var _transactions = __webpack_require__(209);
+
+	var _abi = __webpack_require__(167);
+
+	var abi = _interopRequireWildcard(_abi);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	/**
+	 * Created by denisgranha on 31/10/16.
+	 */
+
+	function setup(config, callback) {
+	  var contractInstance = config.web3.eth.contract(abi.hunchGameToken).at(config.addresses.hunchGameToken);
+	  var args = [config.addresses.hunchGameMarketFactory, (0, _transactions.txDefaults)(config)];
+
+	  var booleanSuccessTest = function booleanSuccessTest(res) {
+	    return res;
+	  };
+	  return (0, _transactions.callAndSendTransaction)(contractInstance.setup, "setup", args, config, (0, _transactions.errorOnFailure)('setup', booleanSuccessTest), callback);
+	}
+
+/***/ },
+/* 462 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
 
@@ -118162,7 +118184,7 @@ var gnosis =
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function addCredit(config, callback) {
-	    var contractInstance = config.web3.eth.contract(abi.hunchGameToken).at(config.addresses.defaultMarket);
+	    var contractInstance = config.web3.eth.contract(abi.hunchGameMarketFactory).at(config.addresses.hunchGameMarketFactory);
 	    var args = [(0, _transactions.txDefaults)(config)];
 
 	    var booleanSuccessTest = function booleanSuccessTest(res) {
@@ -118179,7 +118201,7 @@ var gnosis =
 	 */
 
 	function buyCredits(spend, config, callback) {
-	    var contractInstance = config.web3.eth.contract(abi.hunchGameToken).at(config.addresses.defaultMarket);
+	    var contractInstance = config.web3.eth.contract(abi.hunchGameMarketFactory).at(config.addresses.hunchGameMarketFactory);
 	    var args = [(0, _assign2.default)({ value: spend }, (0, _transactions.txDefaults)(config))];
 
 	    var booleanSuccessTest = function booleanSuccessTest(res) {
@@ -118189,7 +118211,7 @@ var gnosis =
 	}
 
 	function getUserLevel(config, address, callback) {
-	    var contractInstance = config.web3.eth.contract(abi.hunchGameToken).at(config.addresses.defaultMarket);
+	    var contractInstance = config.web3.eth.contract(abi.hunchGameMarketFactory).at(config.addresses.hunchGameMarketFactory);
 	    return (0, _web3Batch.requestWithBlockNumber)(contractInstance.userLevel, address, 'latest', callback);
 	}
 
@@ -118201,7 +118223,7 @@ var gnosis =
 	 * @returns {Promise|Promise<T>}
 	 */
 	function getLastCredit(config, address, callback) {
-	    var contractInstance = config.web3.eth.contract(abi.hunchGameToken).at(config.addresses.defaultMarket);
+	    var contractInstance = config.web3.eth.contract(abi.hunchGameMarketFactory).at(config.addresses.hunchGameMarketFactory);
 	    return (0, _web3Batch.requestWithBlockNumber)(contractInstance.getLastCredit, address, 'latest', callback);
 	}
 
@@ -118214,17 +118236,17 @@ var gnosis =
 	 * @returns {Request}
 	 */
 	function getTokensInEvents(forAddress, eventHashes, config, callback) {
-	    var contractInstance = config.web3.eth.contract(abi.hunchGameToken).at(config.addresses.defaultMarket);
+	    var contractInstance = config.web3.eth.contract(abi.hunchGameMarketFactory).at(config.addresses.hunchGameMarketFactory);
 	    return (0, _web3Batch.requestWithBlockNumber)(contractInstance.getTokensInEvents, forAddress, eventHashes, 'latest', callback);
 	}
 
 	function getHighScores(userAddresses, config, callback) {
-	    var contractInstance = config.web3.eth.contract(abi.hunchGameToken).at(config.addresses.defaultMarket);
+	    var contractInstance = config.web3.eth.contract(abi.hunchGameMarketFactory).at(config.addresses.hunchGameMarketFactory);
 	    return (0, _web3Batch.requestWithBlockNumber)(contractInstance.getHighScores, userAddresses, 'latest', callback);
 	}
 
 /***/ },
-/* 462 */
+/* 463 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -118275,7 +118297,7 @@ var gnosis =
 	}
 
 /***/ },
-/* 463 */
+/* 464 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';

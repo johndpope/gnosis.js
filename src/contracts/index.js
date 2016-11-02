@@ -2,14 +2,15 @@
  * Created by denisgranha on 8/4/16.
  */
 
-import * as events from './events';
-import * as marketMaker from './abstract-market-maker';
-import * as oracle from './abstract-oracle';
+import * as eventFactory from './event-factory';
+import * as marketMaker from './market-maker';
+import * as oracle from './oracle';
 import * as ultimateOracle from './ultimate-oracle';
 import * as hunchGameToken from './hunch-game-token';
-import * as market from './abstract-market';
-import * as abstractToken from './abstract-token';
+import * as hunchGameMarketFactory from './hunch-game-market-factory';
+import * as marketFactory from './market-factory';
+import * as token from './token';
 import * as etherToken from './ether-token';
 
-export default {events, marketMaker, oracle, ultimateOracle, hunchGameToken, market,
-    abstractToken, etherToken}
+export default {eventFactory, marketMaker, oracle, ultimateOracle,
+  hunchGameToken, hunchGameMarketFactory, marketFactory, token, etherToken}

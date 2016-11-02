@@ -16,9 +16,10 @@ export default function create(config){
         'resolutionDate': faker.Date.future(10, new Date( new Date().getTime() + 1000*60*5)),
         'outcomes': ['Yes', 'No'],
         'fee': new BigNumber('0'),
+        'feeToken': config.addresses.etherToken,
         'outcomeCount': 2,
         'resolverAddress': config.addresses.ultimateOracle,
-        'tokenAddress': config.addresses.defaultMarket,
+        'tokenAddress': config.addresses.etherToken,
         'market': {
             'fee': new BigNumber('0'),
             'initialFunding': new BigNumber('1e19'),

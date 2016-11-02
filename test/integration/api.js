@@ -28,7 +28,7 @@ const eventRevision = {
   title: "New title",
   description: "New description",
   sourceURL: 'http://groupgnosis.com',
-  resolutionDate: '2016-11-02T08:30:30Z',
+  resolutionDate: '2018-11-02T08:30:30Z',
   outcomes: ['Yes', 'No'],
   nonce: 1
 };
@@ -55,34 +55,34 @@ describe('Create events', function createEvent() {
 
 
   describe('events', () => {
-    it('create ranged event ok', (done) => {
+    it('create ranged event ok', () => {
         let rangedEvent = {
             'kind': 'ranged',
             'tags': ['kanye-west', 'kim-kardashian'],
             'title': "Kim and Kanye's second baby will be a boy.",
             'description': "Kim and Kanye's second baby will be a boy.",
             'sourceURL': 'http://gawker.com/',
-            'resolutionDate': '2016-11-02T08:30:30Z',
+            'resolutionDate': '2018-11-02T08:30:30Z',
             'unit': 'eth',
             'decimals': 10,
             'fee': new BigNumber('1e17'), // 0.5 ether
+            'feeToken': config.addresses.etherToken
         };
 
         return gnosis.api.createEvent(rangedEvent, config.account, config)
             .then((response) => {
                 expect(response.status).to.equal(201);
-                done();
             });
     });
 
-    it('create ranged event without subscribe', (done) => {
+    it('create ranged event without subscribe', () => {
       let rangedEvent = {
           'kind': 'ranged',
           'tags': ['kanye-west', 'kim-kardashian'],
           'title': "Kim and Kanye's second baby will be a boy. (on chain event)",
           'description': "Kim and Kanye's second baby will be a boy.",
           'sourceURL': 'http://gawker.com/',
-          'resolutionDate': '2016-11-02T08:30:30Z',
+          'resolutionDate': '2018-11-02T08:30:30Z',
           'unit': 'eth',
           'decimals': 10
       };
@@ -91,7 +91,6 @@ describe('Create events', function createEvent() {
         .then((response) =>
         {
           expect(response.status).to.equal(201);
-          done();
         });
 
     });
@@ -125,16 +124,16 @@ describe('Create events', function createEvent() {
           expect(descriptionHash).to.be.a('string');
             return gnosis.api.subscribeOracleToEvent(
               new BigNumber('2'),
+              config.addresses.etherToken,
               descriptionHash,
               config.account,
+              null,
               config
             )
-                .then((result) => {
-
-                },
-                (error) => {
-                    expect(error).to.be.a('object');
-                });
+            .catch(
+            (error) => {
+              expect(error).to.be.a('object');
+            });
         });
     });
 
@@ -147,8 +146,10 @@ describe('Create events', function createEvent() {
               expect(descriptionHash).to.be.a('string');
               return gnosis.api.subscribeOracleToEvent(
                 new BigNumber('1'),
+                config.addresses.etherToken,
                 descriptionHash,
                 config.accounts[1],
+                'test@gnosis.pm',
                 config
               )
                 .then((result) =>
@@ -164,7 +165,7 @@ describe('Create events', function createEvent() {
   });
 
   describe('event results', () => {
-      it("publish result ok", (done) => {
+      it("publish result ok", () => {
         return gnosis.api.createEvent(event, config.account, config)
           .then((response) =>
           {
@@ -191,12 +192,11 @@ describe('Create events', function createEvent() {
                     .to.be.a('object');
                   expect(result.data.offChainOracles[config.account].result)
                     .to.be.a('object');
-                  done();
                 });
           });
       });
 
-      it("publish result, unknown oracle", (done) => {
+      it("publish result, unknown oracle", () => {
         return gnosis.api.createEvent(event, config.account, config)
           .then((response) =>
           {
@@ -213,14 +213,12 @@ describe('Create events', function createEvent() {
               config)
                 .then((result) =>
                 {
-                  done(result);
                 },
                 (error) =>
                 {
                   expect(error).to.be.a('object');
                   expect(error.status).to.equal(401);
                   expect(error.data.detail).to.equal('Oracle not found');
-                  done();
                 });
           });
       });
@@ -235,7 +233,7 @@ describe('Create events', function createEvent() {
             let result = {
               result: new BigNumber('1'),
               descriptionHash,
-              publicationDate: new Date(),
+              publicationDate: new Date(new Date().getTime() + 1000*60*60*24),
               email: "denis@gnosis.pm"
             }
             return gnosis.api.postResult(
@@ -268,7 +266,7 @@ describe('Create events', function createEvent() {
             let result = {
               result: new BigNumber('1'),
               descriptionHash,
-              publicationDate: new Date()
+              publicationDate: new Date(new Date() + 1000*60*60)
             }
             return gnosis.api.postResult(
               result,

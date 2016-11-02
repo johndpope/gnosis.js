@@ -37,12 +37,12 @@ describe('market maker', function testSuite() {
         // the market data
         return gnosis.state.buildState(config).then((state) =>
         {
-          expect(state.markets[config.addresses.defaultMarket]).to.be.ok;
+          expect(state.markets[config.addresses.defaultMarketFactory]).to.be.ok;
           expect(
-            Object.keys(state.markets[config.addresses.defaultMarket]).length
+            Object.keys(state.markets[config.addresses.defaultMarketFactory]).length
           ).to.equal(1);
           marketHash = Object.keys(
-            state.markets[config.addresses.defaultMarket]
+            state.markets[config.addresses.defaultMarketFactory]
           )[0];
         });
       });
@@ -51,7 +51,7 @@ describe('market maker', function testSuite() {
 
   it('calc costs buying', () => {
     config.addresses.lmsrMarketMaker = null;
-    return gnosis.contracts.events.calcBaseFee(
+    return gnosis.contracts.eventFactory.calcBaseFee(
       new BigNumber('1e19'),
       config
     )
@@ -72,13 +72,14 @@ describe('market maker', function testSuite() {
       .then((result) => {
         expect(result).to.be.a('object');
         expect(result.toString(10)).to.be.a('string');
-        expect(result.toString(10)).to.equal('508688060865134215');
+        // expect(result.toString(10)).to.equal('508688060865134215');
+        expect(result.toString(10)).to.equal('508672777026889653'); // fee=0
       });
     });
   });
 
   it('calc costs buying lmsr market maker', () => {
-    return gnosis.contracts.events.calcBaseFee(
+    return gnosis.contracts.eventFactory.calcBaseFee(
       new BigNumber('1e19'),
       config
     )
@@ -99,7 +100,8 @@ describe('market maker', function testSuite() {
       .then((result) => {
         expect(result).to.be.a('object');
         expect(result.toString(10)).to.be.a('string');
-        expect(result.toString(10)).to.equal('508688060865134215');
+        // expect(result.toString(10)).to.equal('508688060865134215');
+        expect(result.toString(10)).to.equal('508672777026889653'); // fee=0
       });
     });
   });
@@ -118,7 +120,8 @@ describe('market maker', function testSuite() {
     .then((result) => {
       expect(result).to.be.a('object');
       expect(result.toString(10)).to.be.a('string');
-      expect(result.toString(10)).to.equal('510676785042921717');
+      // expect(result.toString(10)).to.equal('510676785042921717');
+      expect(result.toString(10)).to.equal('508672777026889653'); // fee=0
     });
   });
 
@@ -129,7 +132,7 @@ describe('market maker', function testSuite() {
           marketHash,
           new BigNumber('1e19'),
           [new BigNumber('1e19'), new BigNumber('1e19')],
-          1,
+          new BigNumber('1'),
           new BigNumber('1e18'),
           config,
           null,
@@ -184,7 +187,7 @@ describe('market maker', function testSuite() {
   });
 
   it('calc costs buying with javascript library', () => {
-      return gnosis.contracts.events.calcBaseFee(
+      return gnosis.contracts.eventFactory.calcBaseFee(
         new BigNumber('1e19'),
         config
       )
@@ -199,7 +202,8 @@ describe('market maker', function testSuite() {
 
         expect(cost).to.be.a('object');
         expect(cost.toString(10)).to.be.a('string');
-        expect(cost.toString(10)).to.equal('508688060865134215');
+        // expect(cost.toString(10)).to.equal('508688060865134215');
+        expect(cost.toString(10)).to.equal('508672777026889653'); // fee=0
       });
   });
 

@@ -5,6 +5,7 @@
 import axios from 'axios';
 import {
   getEventIdentifiers,
+  signOracleFee,
   signWithDescription,
   getEthereumAddress,
   signFactserverPayload,
@@ -33,10 +34,11 @@ export function createEvent(event, oracleAddress, config) {
 
     return new Promise((resolve, reject) => {
       if(event.fee){
-        return signWithDescription(
+        return signOracleFee(
           oracleAddress,
-          event.fee,
           ids.descriptionHash,
+          event.fee,
+          event.feeToken,
           config
         )
         .then(resolve);
@@ -68,6 +70,7 @@ export function createEvent(event, oracleAddress, config) {
 
       if(event.fee){
         payload.fee = event.fee.toString(10);
+        payload.feeToken = event.feeToken;
       }
 
       return axios.post(url, payload).catch((response) => {
@@ -89,14 +92,15 @@ export function createEvent(event, oracleAddress, config) {
  * @returns {axios.Promise}
  */
 export function subscribeOracleToEvent(
-  givenFee,
+  fee,
+  feeToken,
   descriptionHash,
   oracleAddress,
   email,
   config
 ) {
     const url = config.gnosisServiceURL + 'event/oracle/';
-    return signWithDescription(oracleAddress, givenFee, descriptionHash, config)
+    return signOracleFee(oracleAddress, descriptionHash, fee, feeToken, config)
         .then((messageSignature) => {
             const {message, v, r, s, address} = messageSignature;
             const payload = {
@@ -107,7 +111,8 @@ export function subscribeOracleToEvent(
                   address: oracleAddress
                 },
                 descriptionHash: descriptionHash,
-                fee: message.toString(10),
+                fee: fee.toString(10),
+                feeToken: feeToken,
                 email: email
             };
 

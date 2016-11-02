@@ -1,6 +1,6 @@
 import * as helpers from '../helpers';
 import BigNumber from 'bignumber.js';
-import * as eventToken from '../contracts/events';
+import * as eventFactory from '../contracts/event-factory';
 import {updateEvents} from '../state';
 
 class Event {
@@ -44,21 +44,23 @@ class Event {
     }
 
     buyAllOutcomes(numShares, callback){
-        return eventToken.buyAllOutcomes(this.eventHash, numShares, this.state.config, callback);
+        return eventFactory.buyAllOutcomes(this.eventHash, numShares, this.state.config, callback);
     }
 
     redeemWinnings(callback){
-        return eventToken.redeemWinnings(this.eventHash, this.state.config, callback);
+        return eventFactory.redeemWinnings(this.eventHash, this.state.config, callback);
     }
 
-    redeemAllOutcomes(numShares, callback){
-        return eventToken.redeemAllOutcomes(this.eventHash, numShares, this.state.config, callback);
+    sellAllOutcomes(numShares, callback){
+        return eventFactory.sellAllOutcomes(this.eventHash, numShares, this.state.config, callback);
     }
 
     update(){
       return updateEvents(
         this.state.config,
+        null,
         this.resolverAddress,
+        this.tokenAddress,
         [this.eventHash]
       )
     }

@@ -98,6 +98,39 @@ export function signWithDescription(oracleAddress, message, descriptionHash,
     });
 }
 
+/**
+* Generates the signature expected to subscribe an oracle to one concrete event.
+* @param fee: bigNumber. Represents the fee oracle charges event creator for resolving
+*       the event.
+* @param feeToken: bigNumber|hexString. Token address used to charge oracle fees.
+* @param descriptionHash: hexString. Hash that identifies the event description.
+**/
+export function signOracleFee(oracleAddress, descriptionHash, fee, feeToken,
+  config){
+  const feeHash = crypto.evmKeccak(
+    descriptionHash,
+    hex.encode(fee, 256),
+    feeToken
+  );
+
+  return new Promise( (resolve, reject) => {
+      config.web3.eth.sign(oracleAddress, feeHash,
+          promiseCallback(resolve, reject));
+  })
+  .then((signature) =>
+  {
+      const decodedSignature = decodeSignature(signature);
+      return new Promise( (resolve, reject) => {
+          resolve(Object.assign({
+              fee,
+              feeToken,
+              address: oracleAddress,
+              descriptionHash: descriptionHash,
+          }, decodedSignature))
+      });
+  });
+}
+
 export function signMsg(account, message: String, config){
     const msgHash = '0x' + CryptoJS.SHA3(message,  { outputLength: 256 })
       .toString(CryptoJS.enc.hex);
@@ -142,7 +175,8 @@ export function encodeFeeSignatures(feeSignatures) {
         feeSignatures.map((feeSignature, index) => {
           if(index){
             return [
-              feeSignature.message,
+              feeSignature.fee,
+              new BigNumber(feeSignature.feeToken),
               feeSignature.v,
               feeSignature.r,
               feeSignature.s
@@ -151,7 +185,8 @@ export function encodeFeeSignatures(feeSignatures) {
           else{
             return [
               new BigNumber(feeSignature.descriptionHash),
-              feeSignature.message,
+              feeSignature.fee,
+              new BigNumber(feeSignature.feeToken),
               feeSignature.v,
               feeSignature.r,
               feeSignature.s

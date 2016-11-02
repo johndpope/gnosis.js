@@ -78,7 +78,7 @@ export function getOffChainFee(descriptionHash, feeSignatures){
          );
 
         let address = '0x' + signing.recoverAddress(
-                descriptionHash + hex.encode(fee.message, 256).slice(2),
+                descriptionHash + hex.encode(fee.fee, 256).slice(2),
                 v,
                 r,
                 s
@@ -86,7 +86,7 @@ export function getOffChainFee(descriptionHash, feeSignatures){
 
         if(address == fee.address){
             // Check feeSignature
-            return fee.message.add(new BigNumber(acc));
+            return fee.fee.add(new BigNumber(acc));
         }
         else{
             return acc;

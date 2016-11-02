@@ -11,16 +11,15 @@ import * as state from './state';
 export const defaultConfig = {
   // Mainnet
   addresses: {
-    defaultMarket: '0x6ca7f214ab2ddbb9a8e1a1e2c8550e3164e9dba5',
+    defaultMarketFactory: '0x6ca7f214ab2ddbb9a8e1a1e2c8550e3164e9dba5',
     defaultMarketMaker: '0x8695e5e79dab06fbbb05f445316fa4edb0da30f0',
     etherToken: '0x92f1dbea03ce08225e31e95cc926ddbe0198e6f2',
-    events: '0x5aae5c59d642e5fd45b427df6ed478b49d55fefd',
+    eventFactory: '0x5aae5c59d642e5fd45b427df6ed478b49d55fefd',
     ultimateOracle: '0x529c4cb814029b8bb32acb516ea3a4b07fdae350',
     lmsrMarketMaker: '0x8695e5e79dab06fbbb05f445316fa4edb0da30f0'
   },
   addressFilters: {
-    oracle: '0x529c4cb814029b8bb32acb516ea3a4b07fdae350',
-    investor: '0x0',
+    oracle: '0x529c4cb814029b8bb32acb516ea3a4b07fdae350'
   },
   eventDescriptionFilters: {
     oracleAddresses: null,
@@ -33,7 +32,7 @@ export const defaultConfig = {
     tokens: ['0x92f1dbea03ce08225e31e95cc926ddbe0198e6f2'],
   },
 
-  defaultGas: 100000,
+  defaultGas: 3000000,
   defaultGasPrice: new BigNumber('5e10'), // 50 gwei
 
   gnosisServiceURL: 'https://www.gnosis.pm/api/',
@@ -134,6 +133,7 @@ function checkTransactions(config){
                       e == null &&
                       receipt &&
                       state.get(config).transactions &&
+                      state.get(config).transactions[key] &&
                       state.get(config).transactions[key].receipt == null
                     )
                     {
@@ -152,7 +152,7 @@ function checkTransactions(config){
                         transactionCallback(e, receipt);
                       }
 
-                      //call config transaction callback
+                      // call config transaction callback
                       if(config.transactionConfirmCallback) {
                         config.transactionConfirmCallback(e, receipt);
                       }

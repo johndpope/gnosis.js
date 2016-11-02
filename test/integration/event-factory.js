@@ -15,6 +15,7 @@ describe('events', function testSuite(){
     let testEvent = testrpcConfig.events[0];
 
     beforeEach(() => {
+      gnosis.state.reset();
       // Initialize gnosis.js config object
       return gnosis.config.initialize(testrpcConfig)
       .then((appConfig) => {
@@ -23,10 +24,11 @@ describe('events', function testSuite(){
 
         // Sign event data
         let ids = gnosis.helpers.getEventIdentifiers(testEvent);
-        return gnosis.helpers.signWithDescription(
+        return gnosis.helpers.signOracleFee(
             config.account,
-            testEvent.fee,
             ids.descriptionHash,
+            testEvent.fee,
+            testEvent.feeToken,
             config
         )
         .then((feeData) =>
@@ -34,7 +36,7 @@ describe('events', function testSuite(){
           expect(feeData).to.be.a('object');
           // Create event in the blockchain
           return new Promise((resolve, reject) => {
-            gnosis.contracts.events.createOffChainEvent(
+            gnosis.contracts.eventFactory.createOffChainEvent(
               testEvent,
               ids.descriptionHash,
               [feeData],
@@ -47,8 +49,9 @@ describe('events', function testSuite(){
               expect(receipt.transactionHash).to.be.a('string');
               // Get event from description_hash
               return new Promise((resolve, reject) => {
-                gnosis.contracts.events.getEventHashes(
+                gnosis.contracts.eventFactory.getEventHashes(
                   [ids.descriptionHash],
+                  [config.account],
                   config,
                   promiseCallback(resolve, reject)
                 ).call();
@@ -59,7 +62,7 @@ describe('events', function testSuite(){
                   // Get event from eventHash
                   eventHash = '0x' + result[result.length - 1].toString(16);
                   return new Promise((resolve, reject) => {
-                    gnosis.contracts.events.getEvent(
+                    gnosis.contracts.eventFactory.getEvent(
                       eventHash,
                       config,
                       promiseCallback(resolve, reject)
@@ -90,21 +93,23 @@ describe('events', function testSuite(){
           'unit': 'eth',
           'decimals': 10,
           'fee': new BigNumber('0'),
+          'feeToken': config.addresses.etherToken,
           'outcomeCount': 2,
           'resolverAddress': config.addresses.ultimateOracle,
-          'tokenAddress': config.addresses.defaultMarket
+          'tokenAddress': config.addresses.etherToken
       };
 
       let ids = gnosis.helpers.getEventIdentifiers(rangedEvent);
-      return gnosis.helpers.signWithDescription(
+      return gnosis.helpers.signOracleFee(
         config.account,
-        rangedEvent.fee,
         ids.descriptionHash,
+        rangedEvent.fee,
+        rangedEvent.feeToken,
         config
       ).then((feeData)=> {
         expect(feeData).to.be.a('object');
         return new Promise((resolve, reject) => {
-          gnosis.contracts.events.createOffChainEvent(
+          gnosis.contracts.eventFactory.createOffChainEvent(
             rangedEvent,
             ids.descriptionHash,
             [feeData],
@@ -116,8 +121,9 @@ describe('events', function testSuite(){
           expect(receipt.transactionHash).to.be.a('string');
           // Get event from description_hash
           return new Promise((resolve, reject) => {
-            gnosis.contracts.events.getEventHashes(
+            gnosis.contracts.eventFactory.getEventHashes(
               [ids.descriptionHash],
+              [config.account],
               config,
               promiseCallback(resolve, reject)
             ).call();
@@ -127,10 +133,9 @@ describe('events', function testSuite(){
 
             // Get event from event_hash
             let rangedEventHash = '0x' + result[result.length-1].toString(16);
-            return gnosis.contracts.events.getEventsProcessed(
+            return gnosis.contracts.eventFactory.getEventsProcessed(
               [rangedEventHash],
               config.addresses.ultimateOracle,
-              null,
               null,
               config
             ).then((result) => {
@@ -153,27 +158,30 @@ describe('events', function testSuite(){
           'sourceURL': 'http://gawker.com/',
           'outcomes': ['Yes', 'No'],
           'fee': new BigNumber('0'),
+          'feeToken': config.addresses.etherToken,
           'outcomeCount': 2,
           'resolverAddress': config.addresses.ultimateOracle,
-          'tokenAddress': config.addresses.defaultMarket
+          'tokenAddress': config.addresses.etherToken
 
       };
 
       let ids = gnosis.helpers.getEventIdentifiers(onChainEvent);
-      return gnosis.helpers.signWithDescription(
+      return gnosis.helpers.signOracleFee(
         config.account,
-        onChainEvent.fee,
         ids.descriptionHash,
+        onChainEvent.fee,
+        onChainEvent.feeToken,
         config)
         .then((feeData)=> {
           expect(feeData).to.be.a('object');
           return new Promise((resolve, reject) => {
-            return gnosis.contracts.events.createEvent(
+            return gnosis.contracts.eventFactory.createEvent(
               onChainEvent,
               ids.descriptionHash,
               [
                 new BigNumber(ids.descriptionHash),
-                feeData.message,
+                feeData.fee,
+                feeData.feeToken,
                 feeData.v,
                 feeData.r,
                 feeData.s
@@ -186,8 +194,9 @@ describe('events', function testSuite(){
             expect(receipt.transactionHash).to.be.a('string');
             // Get event from description_hash
             return new Promise((resolve, reject) => {
-              gnosis.contracts.events.getEventHashes(
+              gnosis.contracts.eventFactory.getEventHashes(
                 [ids.descriptionHash],
+                [config.account],
                 config,
                 promiseCallback(resolve, reject)
               ).call();
@@ -197,10 +206,9 @@ describe('events', function testSuite(){
 
               // Get event from event_hash
               let rangedEventHash = '0x'+result[result.length-1].toString(16);
-              return gnosis.contracts.events.getEventsProcessed(
+              return gnosis.contracts.eventFactory.getEventsProcessed(
                 [rangedEventHash],
                 config.addresses.ultimateOracle,
-                null,
                 null,
                 config
               ).then((result) => {
@@ -215,100 +223,110 @@ describe('events', function testSuite(){
 
     it('getEvents', () => {
       return new Promise((resolve, reject) => {
-        gnosis.contracts.events.getEvents(
+        gnosis.contracts.eventFactory.getEvents(
           [eventHash],
           config.addresses.ultimateOracle,
-          null,
           null,
           config,
           promiseCallback(resolve, reject)
         ).call();
       }).then((result) => {
           expect(result).to.be.a('array');
-          expect(result.length).to.equal(14);
+          expect(result.length).to.equal(13);
       });
     });
 
-    it('get base fee, ok', () => {
-      return new Promise((resolve, reject) => {
-        gnosis.contracts.events.getBaseFee(
-          config,
-          promiseCallback(resolve, reject)
-        ).call();
-      }).then((result) => {
-          expect(result.toString(10)).to.equal("2000");
-      });
-    });
+    // it('get base fee, ok', () => {
+    //   return new Promise((resolve, reject) => {
+    //     gnosis.contracts.eventFactory.getBaseFee(
+    //       config,
+    //       promiseCallback(resolve, reject)
+    //     ).call();
+    //   }).then((result) => {
+    //       expect(result.toString(10)).to.equal("2000");
+    //   });
+    // });
 
-    it('calcBaseFeeForShares, ok', (done) => {
-      gnosis.contracts.events.calcBaseFeeForShares(
+    it('calcBaseFeeForShares, ok', () => {
+      return gnosis.contracts.eventFactory.calcBaseFeeForShares(
         new BigNumber('1e18'),
         config
       ).then((baseFee) => {
-        expect(baseFee.eq(new BigNumber('2004008016032064'))).to.be.true;
-        done();
+        // expect(baseFee.eq(new BigNumber('2004008016032064'))).to.be.true;
+        expect(baseFee.eq(new BigNumber('0'))).to.be.true;
+      })
+    });
+
+    it('calcBaseFee, ok', () => {
+      return gnosis.contracts.eventFactory.calcBaseFee(
+        new BigNumber('1e18'),
+        config
+      )
+      .then((baseFee) => {
+        //expect(baseFee.eq(new BigNumber('2000000000000000'))).to.be.true;
+        expect(baseFee.eq(new BigNumber('0'))).to.be.true;
       });
     });
 
-    it('calcBaseFee, ok', (done) => {
-        gnosis.contracts.events.calcBaseFee(
-          new BigNumber('1e18'),
-          config)
-        .then((baseFee) => {
-          expect(baseFee.eq(new BigNumber('2000000000000000'))).to.be.true;
-          done();
-        });
-    });
-
-    it('Buy All outcomes hunchgame, ok', () => {
+    it('Buy All outcomes, ok', () => {
       return new Promise((resolve, reject) => {
-        // Need to approve before, tokens to buy
-        gnosis.contracts.abstractToken.approve(
-          testrpcConfig.events[0].tokenAddress,
-          config.addresses.events,
+        gnosis.contracts.etherToken.buyTokens(
           new BigNumber('1e19'),
           config,
           promiseCallback(resolve, reject)
         );
       }).then((receipt) => {
         return new Promise((resolve, reject) => {
-          gnosis.contracts.events.buyAllOutcomes(
-            eventHash,
+          // Need to approve before, tokens to buy
+          gnosis.contracts.token.approve(
+            testEvent.tokenAddress,
+            config.addresses.eventFactory,
             new BigNumber('1e19'),
             config,
             promiseCallback(resolve, reject)
-          ).then((result) => {
-              expect(result).to.be.a('object');
-              expect(result.simulatedResult).to.be.true;
-          });
+          );
         }).then((receipt) => {
+          return new Promise((resolve, reject) => {
+            gnosis.contracts.eventFactory.buyAllOutcomes(
+              eventHash,
+              new BigNumber('1e19'),
+              config,
+              promiseCallback(resolve, reject)
+            ).then((result) => {
+                expect(result).to.be.a('object');
+                expect(result.simulatedResult).to.be.true;
+            }, console.error);
+          }).then((receipt) => {
 
+          });
         });
       });
     });
 
-    it('buy all outcomes, ether based', () => {
+    it('buy all outcomes, hunchgame based', () => {
       let event = {
         'kind': 'discrete',
-        'title': "ether event",
-        'description': "ether event",
+        'title': "hunchgame event",
+        'description': "hunchgame event",
         'sourceURL': 'http://gawker.com/',
         'outcomes': ['Yes', 'No'],
         'fee': new BigNumber('0'),
+        'feeToken': config.addresses.hunchGameToken,
         'outcomeCount': 2,
         'resolverAddress': config.addresses.ultimateOracle,
-        'tokenAddress': config.addresses.etherToken
+        'tokenAddress': config.addresses.hunchGameToken
       };
       let ids = gnosis.helpers.getEventIdentifiers(event);
-      return gnosis.helpers.signWithDescription(
+      return gnosis.helpers.signOracleFee(
         config.account,
-        event.fee,
         ids.descriptionHash,
+        event.fee,
+        event.feeToken,
         config
       ).then((feeData)=> {
         expect(feeData).to.be.a('object');
         return new Promise((resolve, reject) => {
-          gnosis.contracts.events.createOffChainEvent(
+          gnosis.contracts.eventFactory.createOffChainEvent(
             event,
             ids.descriptionHash,
             [feeData],
@@ -322,8 +340,9 @@ describe('events', function testSuite(){
 
           return new Promise((resolve, reject) => {
             // Get event from description_hash
-            gnosis.contracts.events.getEventHashes(
+            gnosis.contracts.eventFactory.getEventHashes(
               [ids.descriptionHash],
+              [config.account],
               config,
               promiseCallback(resolve, reject)
             ).call();
@@ -335,33 +354,25 @@ describe('events', function testSuite(){
             // Get event from event_hash
             let etherEventHash = '0x'+result[result.length-1].toString(16);
 
+            // Need to approve before, tokens to buy
             return new Promise((resolve, reject) => {
-              gnosis.contracts.etherToken.buyTokens(
+              gnosis.contracts.token.approve(
+                event.tokenAddress,
+                config.addresses.eventFactory,
                 new BigNumber('1e19'),
                 config,
                 promiseCallback(resolve, reject)
               );
             }).then((receipt) => {
-              // Need to approve before, tokens to buy
-              return new Promise((resolve, reject) => {
-                gnosis.contracts.abstractToken.approve(
-                  event.tokenAddress,
-                  config.addresses.events,
+                return gnosis.contracts.eventFactory.buyAllOutcomes(
+                  etherEventHash,
                   new BigNumber('1e19'),
-                  config,
-                  promiseCallback(resolve, reject)
-                );
-              }).then((receipt) => {
-                  return gnosis.contracts.events.buyAllOutcomes(
-                    etherEventHash,
-                    new BigNumber('1e19'),
-                    config
-                  )
-                  .then((result) =>
-                  {
-                      expect(result).to.be.a('object');
-                      expect(result.simulatedResult).to.be.true;
-                  });
+                  config
+                )
+                .then((result) =>
+                {
+                    expect(result).to.be.a('object');
+                    expect(result.simulatedResult).to.be.true;
                 });
               });
             });
@@ -371,7 +382,7 @@ describe('events', function testSuite(){
 
     it('Buy All outcomes, none ok', () => {
 
-      return gnosis.contracts.events.buyAllOutcomes(
+      return gnosis.contracts.eventFactory.buyAllOutcomes(
         eventHash,
         new BigNumber('0'),
         config
@@ -384,123 +395,155 @@ describe('events', function testSuite(){
       );
     });
 
-    it('Redeem All outcomes, ok', () => {
-      // Need to approve before, tokens to buy
+    it('Sell All outcomes, ok', () => {
       return new Promise((resolve, reject) => {
-        return gnosis.contracts.abstractToken.approve(
-          testEvent.tokenAddress,
-          config.addresses.events,
+        gnosis.contracts.etherToken.buyTokens(
           new BigNumber('10e19'),
           config,
           promiseCallback(resolve, reject)
         );
       }).then((receipt) => {
-        return gnosis.contracts.events.buyAllOutcomes(
-          eventHash,
-          new BigNumber('10e19'),
-          config
-        )
-        .then((result) => {
-          expect(result).to.be.a('object');
-          expect(result.simulatedResult).to.be.true;
-          return gnosis.contracts.events.redeemAllOutcomes(
+        // Need to approve before, tokens to buy
+        return new Promise((resolve, reject) => {
+          return gnosis.contracts.token.approve(
+            testEvent.tokenAddress,
+            config.addresses.eventFactory,
+            new BigNumber('10e19'),
+            config,
+            promiseCallback(resolve, reject)
+          );
+        }).then((receipt) => {
+          return gnosis.contracts.eventFactory.buyAllOutcomes(
             eventHash,
-            new BigNumber('1'),
+            new BigNumber('10e19'),
             config
           )
           .then((result) => {
             expect(result).to.be.a('object');
             expect(result.simulatedResult).to.be.true;
+            return gnosis.contracts.eventFactory.sellAllOutcomes(
+              eventHash,
+              new BigNumber('1'),
+              config
+            )
+            .then((result) => {
+              expect(result).to.be.a('object');
+              expect(result.simulatedResult).to.be.true;
+            });
           });
         });
       });
     });
 
-    it('Redeem All outcomes, none ok', () => {
-      // Need to approve before, tokens to buy
+    it('Sell All outcomes, none ok', () => {
       return new Promise((resolve, reject) => {
-        gnosis.contracts.abstractToken.approve(
-          testEvent.tokenAddress,
-          config.addresses.events,
-          new BigNumber('10e19'),
+        gnosis.contracts.etherToken.buyTokens(
+          new BigNumber('1e19'),
           config,
           promiseCallback(resolve, reject)
         );
       }).then((receipt) => {
-        return gnosis.contracts.events.redeemAllOutcomes(
-          eventHash,
-          new BigNumber('0'),
-          config
-        )
-        .catch(
-          (error) => {
-              expect(error).to.be.ok;
-          }
-        );
-      });
-    });
-
-    it('Redeem winnings without winning outcome set', () => {
-      // Need to approve before, tokens to buy
-      return new Promise((resolve, reject) => {
-        gnosis.contracts.abstractToken.approve(
-          testEvent.tokenAddress,
-          config.addresses.events,
-          new BigNumber('10e19'),
-          config,
-          promiseCallback(resolve, reject)
-        );
-      }).then((receipt) => {
-        return gnosis.contracts.events.redeemWinnings(
-          eventHash,
-          config
-        )
-        .catch(
-          (error) => {
-              expect(error).to.be.ok;
-          }
-        );
-      });
-    });
-
-    it('get Shares', () => {
-      // Need to approve before, tokens to buy
-      return new Promise((resolve, reject) => {
-        gnosis.contracts.abstractToken.approve(
-          testEvent.tokenAddress,
-          config.addresses.events,
-          new BigNumber('10e19'),
-          config,
-          promiseCallback(resolve, reject)
-        );
-      }).then((receipt) => {
-        // Buy outcomes to take shares of the event
+        // Need to approve before, tokens to buy
         return new Promise((resolve, reject) => {
-          gnosis.contracts.events.buyAllOutcomes(
-            eventHash,
+          gnosis.contracts.token.approve(
+            testEvent.tokenAddress,
+            config.addresses.eventFactory,
             new BigNumber('10e19'),
             config,
             promiseCallback(resolve, reject)
           );
-        }).then((receipt) =>
-          {
-            // get shares of event without building the state, shares will
-            // be taken from blockchain instead
-            return new Promise((resolve, reject) => {
-              gnosis.contracts.events.getShares(
-                config.account,
-                [eventHash],
-                config,
-                promiseCallback(resolve, reject)
-              ).call();
-            }).then((result) =>
-              {
-                expect(result).to.be.a('array');
-                expect(result.length).to.be.above(1);
+        }).then((receipt) => {
+          return gnosis.contracts.eventFactory.sellAllOutcomes(
+            eventHash,
+            new BigNumber('0'),
+            config
+          )
+          .catch(
+            (error) => {
+                expect(error).to.be.ok;
+            }
+          );
+        });
+      });
+    });
 
-              });
+    it('Redeem winnings without winning outcome set', () => {
+      return new Promise((resolve, reject) => {
+        gnosis.contracts.etherToken.buyTokens(
+          new BigNumber('1e19'),
+          config,
+          promiseCallback(resolve, reject)
+        );
+      }).then((receipt) => {
+        // Need to approve before, tokens to buy
+        return new Promise((resolve, reject) => {
+          gnosis.contracts.token.approve(
+            testEvent.tokenAddress,
+            config.addresses.eventFactory,
+            new BigNumber('10e19'),
+            config,
+            promiseCallback(resolve, reject)
+          );
+        }).then((receipt) => {
+          return gnosis.contracts.eventFactory.redeemWinnings(
+            eventHash,
+            config
+          )
+          .catch(
+            (error) => {
+                expect(error).to.be.ok;
+            }
+          );
+        });
+      });
+    });
 
-          });
+    it('get Shares', () => {
+      return new Promise((resolve, reject) => {
+        gnosis.contracts.etherToken.buyTokens(
+          new BigNumber('10e19'),
+          config,
+          promiseCallback(resolve, reject)
+        );
+      }).then((receipt) => {
+        // Need to approve before, tokens to buy
+        return new Promise((resolve, reject) => {
+          gnosis.contracts.token.approve(
+            testEvent.tokenAddress,
+            config.addresses.eventFactory,
+            new BigNumber('10e19'),
+            config,
+            promiseCallback(resolve, reject)
+          );
+        }).then((receipt) => {
+          // Buy outcomes to take shares of the event
+          return new Promise((resolve, reject) => {
+            gnosis.contracts.eventFactory.buyAllOutcomes(
+              eventHash,
+              new BigNumber('10e19'),
+              config,
+              promiseCallback(resolve, reject)
+            );
+          }).then((receipt) =>
+            {
+              // get shares of event without building the state, shares will
+              // be taken from blockchain instead
+              return new Promise((resolve, reject) => {
+                gnosis.contracts.eventFactory.getShares(
+                  config.account,
+                  [eventHash],
+                  config,
+                  promiseCallback(resolve, reject)
+                ).call();
+              }).then((result) =>
+                {
+                  expect(result).to.be.a('array');
+                  expect(result.length).to.be.above(1);
+
+                });
+
+            });
+        });
       });
     });
 
@@ -511,17 +554,20 @@ describe('events', function testSuite(){
         'description': "event with fee",
         'sourceURL': 'http://gawker.com/',
         'outcomes': ['Yes', 'No'],
-        'fee': new BigNumber('1e17'),
+        'fee': new BigNumber('1e18'),
+        'feeToken': config.addresses.etherToken,
         'outcomeCount': 2,
         'resolverAddress': config.addresses.ultimateOracle,
-        'tokenAddress': config.addresses.defaultMarket
+        'tokenAddress': config.addresses.etherToken
       };
 
+
       let ids = gnosis.helpers.getEventIdentifiers(eventWithFee);
-      return gnosis.helpers.signWithDescription(
+      return gnosis.helpers.signOracleFee(
         config.account,
-        eventWithFee.fee,
         ids.descriptionHash,
+        eventWithFee.fee,
+        eventWithFee.feeToken,
         config
       )
       .then((feeData) => {
@@ -529,24 +575,24 @@ describe('events', function testSuite(){
 
         return new Promise((resolve, reject) => {
           return gnosis.contracts.etherToken.buyTokens(
-            new BigNumber('1e17'),
+            eventWithFee.fee,
             config,
             promiseCallback(resolve, reject)
           );
         }).then((receipt) => {
           // Need to approve before, tokens to buy
           return new Promise((resolve, reject) => {
-            gnosis.contracts.abstractToken.approve(
+            gnosis.contracts.token.approve(
               config.addresses.etherToken,
-              config.addresses.events,
-              new BigNumber('1e17'),
+              config.addresses.eventFactory,
+              eventWithFee.fee,
               config,
               promiseCallback(resolve, reject)
             );
           })
           .then((receipt) => {
             return new Promise((resolve, reject) => {
-              gnosis.contracts.events.createOffChainEvent(
+              gnosis.contracts.eventFactory.createOffChainEvent(
                 eventWithFee,
                 ids.descriptionHash,
                 [feeData],
@@ -558,8 +604,9 @@ describe('events', function testSuite(){
               expect(receipt.transactionHash).to.be.a('string');
               // Get event from description_hash
               return new Promise((resolve, reject) => {
-               gnosis.contracts.events.getEventHashes(
+               gnosis.contracts.eventFactory.getEventHashes(
                  [ids.descriptionHash],
+                 [config.account],
                  config,
                  promiseCallback(resolve, reject)
                ).call();
@@ -575,8 +622,8 @@ describe('events', function testSuite(){
     });
 
     it('permit permanent approval', () => {
-      return gnosis.contracts.events.permitPermanentApproval(
-        config.addresses.defaultMarket,
+      return gnosis.contracts.eventFactory.permitPermanentApproval(
+        config.addresses.hunchGameToken,
         config
       )
       .then((result) => {
@@ -586,9 +633,9 @@ describe('events', function testSuite(){
 
     it('check permament approval', () => {
       return new Promise((resolve, reject) => {
-        gnosis.contracts.events.isPermanentlyApproved(
+        gnosis.contracts.eventFactory.isPermanentlyApproved(
           config.account,
-          config.addresses.defaultMarket,
+          config.addresses.hunchGameToken,
           config,
           promiseCallback(resolve, reject)
         ).call();
@@ -596,17 +643,17 @@ describe('events', function testSuite(){
       .then((approved) => {
         expect(approved).to.be.false;
         return new Promise((resolve, reject) => {
-          gnosis.contracts.events.permitPermanentApproval(
-            config.addresses.defaultMarket,
+          gnosis.contracts.eventFactory.permitPermanentApproval(
+            config.addresses.hunchGameToken,
             config,
             promiseCallback(resolve, reject)
           );
         })
         .then((receipt) => {
           return new Promise((resolve, reject) => {
-            gnosis.contracts.events.isPermanentlyApproved(
+            gnosis.contracts.eventFactory.isPermanentlyApproved(
               config.account,
-              config.addresses.defaultMarket,
+              config.addresses.hunchGameToken,
               config,
               promiseCallback(resolve, reject)
             ).call();
@@ -620,25 +667,25 @@ describe('events', function testSuite(){
 
     it('check revoke permament approval', () => {
       return new Promise((resolve, reject) => {
-        gnosis.contracts.events.permitPermanentApproval(
-          config.addresses.defaultMarket,
+        gnosis.contracts.eventFactory.permitPermanentApproval(
+          config.addresses.hunchGameToken,
           config,
           promiseCallback(resolve, reject)
         );
       })
       .then((receipt) => {
         return new Promise((resolve, reject) => {
-          gnosis.contracts.events.revokePermanentApproval(
-            config.addresses.defaultMarket,
+          gnosis.contracts.eventFactory.revokePermanentApproval(
+            config.addresses.hunchGameToken,
             config,
             promiseCallback(resolve, reject)
           );
         }).then((receipt) => {
             expect(receipt).to.be.a('object');
             return new Promise((resolve, reject) => {
-              gnosis.contracts.events.isPermanentlyApproved(
+              gnosis.contracts.eventFactory.isPermanentlyApproved(
                 config.account,
-                config.addresses.defaultMarket,
+                config.addresses.hunchGameToken,
                 config,
                 promiseCallback(resolve, reject)
               ).call();

@@ -3,15 +3,15 @@
  */
 import * as abi from '../abi';
 import {requestWithBlockNumber} from '../lib/web3-batch';
-import * as events from './events';
-import * as market from './abstract-market';
+import * as eventFactory from './event-factory';
+import * as marketFactory from './market-factory';
 import * as marketMaker from '../market-maker';
 import {get} from '../state';
 
 // if LMSR makerAddress
 // use javascript implementation
-export function calcCostsBuying(marketHash, initialFunding, shareDistribution, outcomeIndex, numberOfShares,
-                                config, ...args) {
+export function calcCostsBuying(marketHash, initialFunding, shareDistribution,
+  outcomeIndex, numberOfShares, config, ...args) {
     let callback = args.pop();
     let marketMakerAddress = args.pop();
 
@@ -26,7 +26,9 @@ export function calcCostsBuying(marketHash, initialFunding, shareDistribution, o
     if(marketMakerAddress == config.addresses.lmsrMarketMaker){
         return {
             call: function(){
-                callback(null, marketMaker.calcCostsBuying(initialFunding, shareDistribution, outcomeIndex, numberOfShares));
+                callback(null, marketMaker.calcCostsBuying(initialFunding,
+                  shareDistribution, outcomeIndex, numberOfShares)
+                );
             }
         }
     }
@@ -54,7 +56,7 @@ export function calcCostsBuyingWithFees(marketHash, outcomeIndex, numberOfShares
     }
 
     if(!marketAddress){
-        marketAddress = config.addresses.defaultMarket;
+        marketAddress = config.addresses.defaultMarketFactory;
     }
 
     return new Promise((resolve, reject) => {
@@ -67,7 +69,7 @@ export function calcCostsBuyingWithFees(marketHash, outcomeIndex, numberOfShares
         }
         else{
             // Get market info from blockchain
-            market.getMarketsProcessed([marketHash], config, config.account, marketAddress)
+            marketFactory.getMarketsProcessed([marketHash], config, config.account, marketAddress)
                 .then((marketsProcessed) => {
                     if(marketsProcessed.length){
                         resolve(marketsProcessed[0]);
@@ -79,33 +81,37 @@ export function calcCostsBuyingWithFees(marketHash, outcomeIndex, numberOfShares
 
         }
     }).then((marketObject) => {
-        let initialFunding = marketObject.initialFunding;
-        let shareDistribution = marketObject.shares;
-        // get base fee
-        return events.calcBaseFeeForShares(numberOfShares, config)
-            .then((baseFee) => {
-                return calcCostsBuying(marketHash, initialFunding, shareDistribution, outcomeIndex, numberOfShares,
-                    config, marketMakerAddress , (e, costs) => {
-                        return market.calcMarketFee(marketHash, costs, config, marketAddress)
-                            .then((marketFee) => {
-                                let costsWithFees = costs.plus(baseFee).plus(marketFee);
-                                if(callback){
-                                    callback(null, costsWithFees);
-                                }
-                                else{
-                                    return costsWithFees;
-                                }
-                            });
-                    }).call();
+      let initialFunding = marketObject.initialFunding;
+      let shareDistribution = marketObject.shares;
+      // get base fee
+      return eventFactory.calcBaseFeeForShares(
+        numberOfShares, config
+      )
+      .then((baseFee) => {
+        return calcCostsBuying(marketHash, initialFunding, shareDistribution, outcomeIndex, numberOfShares,
+          config, marketMakerAddress , (e, costs) => {
+            return marketFactory.calcMarketFee(
+              marketHash, costs, config, marketAddress
+            )
+            .then((marketFee) => {
+              let costsWithFees = costs.plus(baseFee).plus(marketFee);
+              if(callback){
+                  callback(null, costsWithFees);
+              }
+              else{
+                  return costsWithFees;
+              }
             });
+          }).call();
+      });
     });
 
 }
 
 // if LMSR makerAddress
 // use javascript implementation
-export function calcEarningsSelling(marketHash, initialFunding, shareDistribution, outcome, numberOfShares, config,
-                                    ...args) {
+export function calcEarningsSelling(marketHash, initialFunding,
+  shareDistribution, outcome, numberOfShares, config, ...args) {
     let callback = args.pop();
     let marketMakerAddress = args.pop();
 
@@ -147,7 +153,7 @@ export function calcEarningsSellingWithFees(marketHash, outcomeIndex, numberOfSh
     }
 
     if(!marketAddress){
-        marketAddress = config.addresses.defaultMarket;
+        marketAddress = config.addresses.defaultMarketFactory;
     }
 
     return new Promise((resolve, reject) => {
@@ -160,7 +166,7 @@ export function calcEarningsSellingWithFees(marketHash, outcomeIndex, numberOfSh
         }
         else{
             // Get market info from blockchain
-            market.getMarketsProcessed([marketHash], config, config.account, marketAddress)
+            marketFactory.getMarketsProcessed([marketHash], config, config.account, marketAddress)
                 .then((marketsProcessed) => {
                     if(marketsProcessed.length){
                         resolve(marketsProcessed[0]);
@@ -177,7 +183,7 @@ export function calcEarningsSellingWithFees(marketHash, outcomeIndex, numberOfSh
         let shareDistribution = marketObject.shares;
         calcEarningsSelling(marketHash, initialFunding, shareDistribution, outcomeIndex, numberOfShares, config, marketMakerAddress,
             (e, earnings) => {
-                market.calcMarketFee(marketHash, earnings, config, marketAddress)
+                marketFactory.calcMarketFee(marketHash, earnings, config, marketAddress)
                     .then((marketFee) => {
                         callback(null, earnings.minus(marketFee))
                     });

@@ -1,92 +1,33 @@
 gnosis.js
 ---------
 
-`gnosis.js` is a library that constructs the application state for the Gnosis
-prediction market platform. Its API lets clients subscribe to a stream of
-application states so a callback can be invoked any time a new state is
-available.
+![logo](http://gnosis.pm/static/landingpage/img/Gnosis-Logo_x2.b5a59844deda.png)
 
-Currently, data is fetched from the factserver when the stream is subscribed to,
-then a new state is generated each time a new Ethereum block is available.
+[![Slack Status](http://slack.gnosis.pm/badge.svg)](http://slack.gnosis.pm)
 
-Installation
-============
+Based on the next generation crypto currency network Ethereum.
+Make complex predictions with an easy to use prediction market.
 
-Run `webpack` to generate `dist/gnosis.js`, which you can use in a script tag
-in your project.
+Gnosis.js is the javascript library of Gnosis, made to allow users build
+applications on top of it easier, interacting with the Gnosis API and contracts.
 
-Using gnosis.js as a npm dependency is unlikely to work unless you use Babel.
-TODO: Figure out how to build this properly for distribution.
+* Designed to use with [batch requests](https://github.com/ethereum/wiki/wiki/JavaScript-API#batch-requests).
+* Built-in **state container** for descriptions, events, markets...
+* Easy integration with [Metamask](https://metamask.io/) and [Mist\*](https://github.com/ethereum/mist) (soon [Uport](https://uport.me/#home))
 
-Usage
-=====
+<sub>
+\* *Message signing is not compatible with Mist due to a non standard solution for eth_sign that is being discussed by the community*
+</sub>
 
+Install
+==========
 ```
-import gnosis from 'gnosis';
-
-gnosis.config.initialize().then((config) => {
-  const subscription = gnosis.state.stream(config).subscribe(
-    (state) => console.log('Got a new state!', state),
-    (err) => console.log('Oh no, something went wrong and stopped the stream!', err),
-    () => console.log('States completed')
-  );
-});
+npm install gnosisjs
 ```
 
-See the RxJS documentation for more on what you can do to manipulate the stream
-`gnosis.state.stream` gives you. The stream contains `State` objects, which are
-described below in Flow syntax. These have been extracted from the codebase,
-which contains more type definitions and might be more up to date.
-
-```
-export type State = {
-  block_number: number,
-  events: {[key: Hash]: Event},
-  holdings: {[key: Hash]: Array<BigNumber>},
-}
-
-type Event = DiscreteEvent | RangedEvent;
-
-export type DiscreteEvent = {
-  category: factserver.Category,
-  closing_date: BigNumber,
-  creator_address: Hash,
-  currency_hash: ?Hash,
-  currency_outcome: BigNumber,
-  description_hash: Hash,
-  event_hash: Hash,
-  is_resolved: boolean,
-  kind: 'discrete',
-  market_makers: Array<MarketMaker>,
-  outcome_count: number,
-  outcome_identifiers: Array<Hash>,
-  resolver_address: Hash,
-  revisions: Array<factserver.DiscreteEventRevision>,
-  tags: Array<factserver.Tag>,
-  title: string,
-  winning_outcome: BigNumber,
-};
-
-export type RangedEvent = {
-  category: factserver.Category,
-  closing_date: BigNumber,
-  creator_address: Hash,
-  currency_hash: ?Hash,
-  currency_outcome: BigNumber,
-  description_hash: Hash,
-  event_hash: Hash,
-  is_resolved: boolean,
-  kind: 'ranged',
-  market_makers: Array<MarketMaker>,
-  outcome_count: number,  // outcome_count == 2
-  outcome_identifiers: Array<Hash>,
-  resolver_address: Hash,
-  revisions: Array<factserver.RangedEventRevision>,
-  tags: Array<factserver.Tag>,
-  title: string,
-  winning_number: BigNumber,
-};
-```
+Docs
+==========
+[Read The Docs](http://docs.gnosis.pm/en/latest/)
 
 Developing
 ==========
@@ -107,10 +48,5 @@ Build `gnosis.js` by running `$(npm bin)/webpack`.
 Testing
 =======
 
-`gnosis.js` has an integration test suite that interacts with the actual factserver
+`gnosis.js` has an integration test suite that interacts with the actual API
 and contracts deployed to a TestRPC. See `test/integration/README.md` for instructions.
-
-`gnosis.js` has a Mocha unit test suite. Run it with `npm test`. As of this writing,
-it only has tests for forecasting code that isn't currently used, and these tests
-were broken as the tests were reorganized. When price charts are reimplemented,
-we should update these tests to work again.

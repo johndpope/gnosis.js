@@ -16,12 +16,12 @@ import {promiseCallback} from '../lib/callbacks';
 import * as helpers from '../helpers';
 import * as abi from '../abi';
 import {get} from '../state';
-import {getFee} from './abstract-oracle';
+import {getFee} from './oracle';
 
 export function buyAllOutcomes(eventHash, numShares, config, callback) {
     const contractInstance = config.web3.eth
-      .contract(abi.events)
-      .at(config.addresses.events);
+      .contract(abi.eventFactory)
+      .at(config.addresses.eventFactory);
 
     const args = [
         eventHash,
@@ -42,10 +42,10 @@ export function buyAllOutcomes(eventHash, numShares, config, callback) {
 
 }
 
-export function redeemAllOutcomes(eventHash, numShares, config, callback) {
+export function sellAllOutcomes(eventHash, numShares, config, callback) {
     const contractInstance = config.web3.eth
-      .contract(abi.events)
-      .at(config.addresses.events);
+      .contract(abi.eventFactory)
+      .at(config.addresses.eventFactory);
     const args = [
         eventHash,
         numShares,
@@ -54,11 +54,11 @@ export function redeemAllOutcomes(eventHash, numShares, config, callback) {
     const booleanSuccessTest = res => res;
 
     return callAndSendTransaction(
-        contractInstance.redeemAllOutcomes,
-        "redeemAllOutcomes",
+        contractInstance.sellAllOutcomes,
+        "sellAllOutcomes",
         args,
         config,
-        errorOnFailure('redeemAllOutcomes', booleanSuccessTest),
+        errorOnFailure('sellAllOutcomes', booleanSuccessTest),
         callback);
 }
 
@@ -67,8 +67,8 @@ export function redeemAllOutcomes(eventHash, numShares, config, callback) {
  */
 export function redeemWinnings(eventHash, config, callback) {
     const contractInstance = config.web3.eth
-      .contract(abi.events)
-      .at(config.addresses.events);
+      .contract(abi.eventFactory)
+      .at(config.addresses.eventFactory);
     const args = [
         eventHash,
         txDefaults(config),
@@ -111,8 +111,8 @@ export function createEvent(event, descriptionHash, validationData, config,
   callback) {
 
     const contractInstance = config.web3.eth
-      .contract(abi.events)
-      .at(config.addresses.events);
+      .contract(abi.eventFactory)
+      .at(config.addresses.eventFactory);
     const bounds = {lowerBound: 0, upperBound: 0};
     if (event.kind === constants.KIND_RANGED){
         bounds.lowerBound = event.lowerBound;
@@ -149,13 +149,14 @@ export function createEvent(event, descriptionHash, validationData, config,
  * @param callback
  * @returns {Promise|Promise<T>}
  */
-export function getEventHashes(descriptionHashes, config, callback) {
+export function getEventHashes(descriptionHashes, creators, config, callback) {
     const contractInstance = config.web3.eth
-      .contract(abi.events)
-      .at(config.addresses.events);
+      .contract(abi.eventFactory)
+      .at(config.addresses.eventFactory);
     return requestWithBlockNumber(
         contractInstance.getEventHashes,
         descriptionHashes,
+        creators,
         'latest',
         callback);
 }
@@ -167,10 +168,11 @@ export function getEventHashes(descriptionHashes, config, callback) {
  * @param config
  * @returns {*}
  */
-export function getEventHashesProcessed(descriptionHashes, config) {
+export function getEventHashesProcessed(descriptionHashes, creators, config) {
   return new Promise((resolve, reject) => {
     getEventHashes(
       descriptionHashes,
+      creators,
       config,
       promiseCallback(resolve, reject)
     ).call();
@@ -206,28 +208,26 @@ export function getEventHashesProcessed(descriptionHashes, config) {
  * @returns {Promise|Promise<T>}
  */
 export function getEvents(eventHashes, resolverAddress, tokenAddress,
-  creatorAddress, config, callback) {
+  config, callback) {
     const contractInstance = config.web3.eth
-      .contract(abi.events)
-      .at(config.addresses.events);
+      .contract(abi.eventFactory)
+      .at(config.addresses.eventFactory);
     return requestWithBlockNumber(
         contractInstance.getEvents,
         eventHashes,
         resolverAddress,
         tokenAddress,
-        creatorAddress,
         'latest',
         callback);
 }
 
 export function getEventsProcessed(eventHashes, resolverAddress, tokenAddress,
-  creatorAddress, config) {
+  config) {
   return new Promise((resolve, reject) => {
     getEvents(
       eventHashes,
       resolverAddress,
       tokenAddress,
-      creatorAddress,
       config,
       promiseCallback(resolve, reject)
     ).call();
@@ -248,8 +248,8 @@ export function getEventsProcessed(eventHashes, resolverAddress, tokenAddress,
         }
 
         const eventHash = hex.encode(contractData[eventIndex], 256);
-        const isResolved = !contractData[eventIndex + 9].eq(0);
-        const outcomeCount = contractData[eventIndex + 11].toNumber();
+        const isResolved = !contractData[eventIndex + 8].eq(0);
+        const outcomeCount = contractData[eventIndex + 10].toNumber();
 
         // tokenAddress, currencyHash should be null if is 0x0
 
@@ -258,18 +258,18 @@ export function getEventsProcessed(eventHashes, resolverAddress, tokenAddress,
           descriptionHash:
             hex.encode(contractData[eventIndex + 1], 256),
           kind:
-            contractData[eventIndex + 3].eq(0) ? constants.KIND_DISCRETE : constants.KIND_RANGED,
+            contractData[eventIndex + 2].eq(0) ? constants.KIND_DISCRETE : constants.KIND_RANGED,
           outcomeCount: outcomeCount,
-          eventIdentifier: hex.encode(contractData[eventIndex + 8], 256),
-          resolverAddress: hex.encode(contractData[eventIndex + 7], 160),
+          eventIdentifier: hex.encode(contractData[eventIndex + 7], 256),
+          resolverAddress: hex.encode(contractData[eventIndex + 6], 160),
           tokenAddress:
-            contractData[eventIndex + 6].eq(0) ? null : hex.encode(contractData[eventIndex + 6], 160),
-          creatorAddress: hex.encode(contractData[eventIndex + 2], 160),
+            contractData[eventIndex + 5].eq(0) ? null : hex.encode(contractData[eventIndex + 5], 160),
+          // creatorAddress: hex.encode(contractData[eventIndex + 2], 160),
           isResolved: isResolved,
           winningOutcome:
-            isResolved ? contractData[eventIndex + 10].toNumber() : null,
+            isResolved ? contractData[eventIndex + 9].toNumber() : null,
           tokens: contractData.slice(
-            eventIndex + 12, eventIndex + 12 + outcomeCount
+            eventIndex + 11, eventIndex + 11 + outcomeCount
             ).map(token => hex.encode(token, 160))
         };
 
@@ -277,11 +277,11 @@ export function getEventsProcessed(eventHashes, resolverAddress, tokenAddress,
 
 
         if (events[eventHash].kind === constants.KIND_RANGED) {
-            events[eventHash].lowerBound = contractData[eventIndex + 4];
-            events[eventHash].upperBound = contractData[eventIndex + 5];
+            events[eventHash].lowerBound = contractData[eventIndex + 3];
+            events[eventHash].upperBound = contractData[eventIndex + 4];
         }
 
-        eventIndex += 12 + outcomeCount;
+        eventIndex += 11 + outcomeCount;
       }
 
       resolve(events);
@@ -299,8 +299,8 @@ export function getEventsProcessed(eventHashes, resolverAddress, tokenAddress,
  */
 export function getEvent(eventHash, config, callback) {
     const contractInstance = config.web3.eth
-      .contract(abi.events)
-      .at(config.addresses.events);
+      .contract(abi.eventFactory)
+      .at(config.addresses.eventFactory);
     return requestWithBlockNumber(
         contractInstance.getEvent,
         eventHash,
@@ -318,8 +318,8 @@ export function getEvent(eventHash, config, callback) {
  */
 export function getShares(forAddress, eventHashes, config, callback) {
     const contractInstance = config.web3.eth
-      .contract(abi.events)
-      .at(config.addresses.events);
+      .contract(abi.eventFactory)
+      .at(config.addresses.eventFactory);
     return requestWithBlockNumber(
         contractInstance.getShares,
         forAddress,
@@ -373,8 +373,8 @@ export function getSharesProcessed(forAddress, eventHashes, config) {
  */
 export function getBaseFee(config, callback){
     const contractInstance = config.web3.eth
-      .contract(abi.events)
-      .at(config.addresses.events);
+      .contract(abi.eventFactory)
+      .at(config.addresses.eventFactory);
     return requestWithBlockNumber(
         contractInstance.getBaseFee,
         'latest',
@@ -383,54 +383,76 @@ export function getBaseFee(config, callback){
 }
 
 export function calcBaseFeeForShares(shares, config) {
-    return new Promise((resolve, reject) =>
-    {
-        // use the state if available
-        let baseFee = get(config).baseFee;
-
-        if(baseFee){
-            resolve(baseFee);
-        }
-        else{
-            getBaseFee(config, (e, baseFee) =>
-            {
-                resolve(baseFee);
-            }).call();
-        }
-
-    }).then((baseFee) => {
-        return shares
-        .mul("1000000")
-        .div(
-          new BigNumber("1000000").minus(baseFee)
-        ).minus(shares);
-    });
+  return new Promise((resolve, reject) => {
+    const contractInstance = config.web3.eth
+      .contract(abi.eventFactory)
+      .at(config.addresses.eventFactory);
+    requestWithBlockNumber(
+        contractInstance.calcBaseFeeForShares,
+        shares,
+        'latest',
+        promiseCallback(resolve, reject)
+    ).call();
+  });
+    // return new Promise((resolve, reject) =>
+    // {
+    //     // use the state if available
+    //     let baseFee = get(config).baseFee;
+    //
+    //     if(baseFee){
+    //         resolve(baseFee);
+    //     }
+    //     else{
+    //         getBaseFee(config, (e, baseFee) =>
+    //         {
+    //             resolve(baseFee);
+    //         }).call();
+    //     }
+    //
+    // }).then((baseFee) => {
+    //     return shares
+    //     .mul("1000000")
+    //     .div(
+    //       new BigNumber("1000000").minus(baseFee)
+    //     ).minus(shares);
+    // });
 }
 
 export function calcBaseFee(amount, config) {
-    return new Promise((resolve, reject) =>
-    {
-        // use the state if available
-        let baseFee = get(config).baseFee;
-
-        if(baseFee){
-            resolve(baseFee);
-        }
-        else{
-            getBaseFee(config, (e, baseFee) =>
-            {
-                resolve(baseFee);
-            }).call();
-        }
-    }).then((baseFee) => {
-        return amount.mul(baseFee).div(new BigNumber("1000000")).floor();
-    });
+  return new Promise((resolve, reject) => {
+    const contractInstance = config.web3.eth
+      .contract(abi.eventFactory)
+      .at(config.addresses.eventFactory);
+    requestWithBlockNumber(
+        contractInstance.calcBaseFee,
+        amount,
+        'latest',
+        promiseCallback(resolve, reject)
+    ).call();
+  });
+    // return new Promise((resolve, reject) =>
+    // {
+    //     // use the state if available
+    //     let baseFee = get(config).baseFee;
+    //
+    //     if(baseFee){
+    //         resolve(baseFee);
+    //     }
+    //     else{
+    //         getBaseFee(config, (e, baseFee) =>
+    //         {
+    //             resolve(baseFee);
+    //         }).call();
+    //     }
+    // }).then((baseFee) => {
+    //     return amount.mul(baseFee).div(new BigNumber("1000000")).floor();
+    // });
 }
 
 export function permitPermanentApproval(spender, config, callback) {
     const contractInstance = config.web3.eth
-      .contract(abi.events)
-      .at(config.addresses.events);
+      .contract(abi.eventFactory)
+      .at(config.addresses.eventFactory);
     const args = [
         spender,
         txDefaults(config),
@@ -448,8 +470,8 @@ export function permitPermanentApproval(spender, config, callback) {
 
 export function isPermanentlyApproved(owner, spender, config, callback) {
     const contractInstance = config.web3.eth
-      .contract(abi.events)
-      .at(config.addresses.events);
+      .contract(abi.eventFactory)
+      .at(config.addresses.eventFactory);
 
     return requestWithBlockNumber(
         contractInstance.isPermanentlyApproved,
@@ -486,8 +508,8 @@ export function ensurePermanentApproval(spender, config) {
 
 export function revokePermanentApproval(allowedAddress, config, callback){
     const contractInstance = config.web3.eth
-      .contract(abi.events)
-      .at(config.addresses.events);
+      .contract(abi.eventFactory)
+      .at(config.addresses.eventFactory);
     const args = [
         allowedAddress,
         txDefaults(config),

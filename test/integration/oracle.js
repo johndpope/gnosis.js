@@ -34,10 +34,11 @@ describe('abstract resolver', function runTests() {
       let testEvent = testrpcConfig.events[0];
       let identifiers = gnosis.helpers.getEventIdentifiers(testEvent);
       descriptionHash = identifiers.descriptionHash;
-      return gnosis.helpers.signWithDescription(
+      return gnosis.helpers.signOracleFee(
         config.account,
-        testEvent.fee,
         identifiers.descriptionHash,
+        testEvent.fee,
+        testEvent.feeToken,
         config
       )
       .then((feeData) =>
@@ -101,7 +102,7 @@ describe('abstract resolver', function runTests() {
             gnosis.contracts.ultimateOracle.setOutcome(
               eventIdentifier,
               descriptionHash,
-              new BigNumber('1000'),
+              new BigNumber('1'),
               config.account,
               config,
               promiseCallback(resolve, reject)
@@ -124,9 +125,11 @@ describe('abstract resolver', function runTests() {
               expect(outcomes).to.be.a('array');
               expect(outcomes[0].eq(new BigNumber(descriptionHash)))
                 .to.be.true;
-              expect(outcomes[1].eq(0)).to.be.true;
-              expect(outcomes[2].eq(1)).to.be.true;
-              expect(outcomes[5].eq(1000)).to.be.true;
+              expect(outcomes[1].eq(1)).to.be.true;
+              expect(outcomes[2].eq(config.account)).to.be.true;
+              expect(outcomes[3].greaterThan(0)).to.be.true;
+              expect(outcomes[4].eq(1)).to.be.true;
+              expect(outcomes[5].eq(0)).to.be.true;
 
               return new Promise((resolve, reject) => {
                 config.web3.eth.getBlock(
@@ -139,7 +142,7 @@ describe('abstract resolver', function runTests() {
                 let currentTimestamp = response.timestamp;
 
                 // console.log("Before change %s", currentTimestamp);
-                var futureTime = Math.ceil(currentTimestamp + 60*60*24*365);
+                var futureTime = Math.ceil(currentTimestamp + 60*60*48);
                 return new Promise((resolve, reject) => {
                   //change timestamp
                   config.web3.currentProvider.sendAsync(
@@ -179,6 +182,9 @@ describe('abstract resolver', function runTests() {
                     })
                     .then((response) => {
                       // console.log("After change %s", response.timestamp);
+                      // console.log("Difference %s", (response.timestamp-outcomes[3].toNumber())/(60*60));
+
+                      expect(outcomes[3].lessThan(response.timestamp)).to.be.true;
                       return new Promise((resolve, reject) => {
                         gnosis.contracts.oracle.isOutcomeSet(
                           config.addresses.ultimateOracle,
@@ -214,7 +220,7 @@ describe('abstract resolver', function runTests() {
           gnosis.contracts.ultimateOracle.setOutcome(
             eventIdentifier,
             descriptionHash,
-            new BigNumber('1000'),
+            new BigNumber('1'),
             config.account,
             config,
             promiseCallback(resolve, reject)
@@ -232,7 +238,7 @@ describe('abstract resolver', function runTests() {
           })
           .then((response) => {
             // console.log("Before change %s", response.timestamp);
-            var futureTime = Math.ceil(response.timestamp + 60*60*24*365);
+            var futureTime = Math.ceil(response.timestamp + 60*60*48*365);
             //change timestamp
             return new Promise((resolve, reject) => {
               config.web3.currentProvider.sendAsync(
@@ -263,7 +269,6 @@ describe('abstract resolver', function runTests() {
               .then((mineBlocks) =>
               {
                 expect(mineBlocks.result).to.be.true;
-
                 return new Promise((resolve, reject) => {
                   gnosis.contracts.oracle.getOutcome(
                     config.addresses.ultimateOracle,
@@ -292,10 +297,11 @@ describe('abstract resolver', function runTests() {
 
     it('getFee', () => {
       let testEvent = testrpcConfig.events[0];
-      return gnosis.helpers.signWithDescription(
+      return gnosis.helpers.signOracleFee(
         config.account,
-        testEvent.fee,
         descriptionHash,
+        testEvent.fee,
+        testEvent.feeToken,
         config
       )
       .then((feeData) =>
