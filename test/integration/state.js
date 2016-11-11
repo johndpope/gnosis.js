@@ -94,7 +94,7 @@ describe('state', function runTests(){
     it('event wrapper function sell all outcomes', () => {
         return gnosis.state.buildState(config).then((state) => {
             expect(state).to.be.a('object');
-            let event = state.events[Object.keys(statew)];
+            let event = state.events[Object.keys(state.events)[0]];
             expect(event).to.be.a('object');
             return new Promise((resolve, reject) => {
               gnosis.contracts.token.approve(
@@ -109,8 +109,7 @@ describe('state', function runTests(){
               });
             }).then((receipt) => {
                 return event.sellAllOutcomes(new BigNumber('1e10'));
-            }).then((result) => {
-                expect(result.simulatedResult).to.be.true;
+            }).then((result) => {                
             });
 
         });

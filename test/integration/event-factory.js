@@ -60,7 +60,7 @@ describe('events', function testSuite(){
                   expect(result.length).to.be.above(0);
 
                   // Get event from eventHash
-                  eventHash = '0x' + result[result.length - 1].toString(16);
+                  eventHash = hex.encode(result[result.length - 1], 256);
                   return new Promise((resolve, reject) => {
                     gnosis.contracts.eventFactory.getEvent(
                       eventHash,
@@ -372,7 +372,6 @@ describe('events', function testSuite(){
                 .then((result) =>
                 {
                     expect(result).to.be.a('object');
-                    expect(result.simulatedResult).to.be.true;
                 });
               });
             });
@@ -419,16 +418,12 @@ describe('events', function testSuite(){
             config
           )
           .then((result) => {
-            expect(result).to.be.a('object');
-            expect(result.simulatedResult).to.be.true;
             return gnosis.contracts.eventFactory.sellAllOutcomes(
               eventHash,
               new BigNumber('1'),
               config
             )
             .then((result) => {
-              expect(result).to.be.a('object');
-              expect(result.simulatedResult).to.be.true;
             });
           });
         });
@@ -627,7 +622,6 @@ describe('events', function testSuite(){
         config
       )
       .then((result) => {
-        expect(result.simulatedResult).to.be.true;
       });
     });
 

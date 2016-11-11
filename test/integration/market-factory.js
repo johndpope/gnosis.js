@@ -69,7 +69,7 @@ describe('markets', function testSuite()
           .then((eventHashes) => {
             expect(eventHashes).to.be.a('array');
             expect(eventHashes.length).to.equal(3);
-            eventHash = '0x'+eventHashes[eventHashes.length-1].toString(16);
+            eventHash = hex.encode(eventHashes[eventHashes.length-1], 256);
 
             return new Promise((resolve, reject) => {
               gnosis.contracts.eventFactory.getEvent(
@@ -125,7 +125,7 @@ describe('markets', function testSuite()
                       expect(result[0]).to.be.a('object');
                       expect(result[0].toString(16)).to.be.a('string');
                       marketHashes = result;
-                      marketHash = '0x' + result[result.length-1].toString(16);
+                      marketHash = hex.encode(result[result.length-1], 256);
                     });
                   });
                 });
@@ -294,8 +294,6 @@ describe('markets', function testSuite()
               )
               .then((result) => {
                   expect(result).to.be.a('object');
-                  expect(new BigNumber(result.simulatedResult)
-                    .greaterThan(0)).to.be.true;
               });
             });
           });
@@ -600,7 +598,6 @@ describe('markets', function testSuite()
           config)
           .then((result) => {
               expect(result).to.be.a('object');
-              expect(result.simulatedResult).to.be.true;
           });
   });
 

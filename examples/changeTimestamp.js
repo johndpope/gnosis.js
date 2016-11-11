@@ -17,16 +17,16 @@ gnosis.config.initialize({
             //change timestamp
             config.web3.currentProvider.sendAsync({
                     jsonrpc: "2.0",
-                    method: "evm_setTimestamp",
+                    method: "evm_increaseTime",
                     id: 12346,
-                    params: [futureTime]
+                    params: [60 * 60 * 24 * 365]
                 },
                 (e, changeT) => {
                     config.web3.currentProvider.sendAsync({
                             jsonrpc: "2.0",
-                            method: "evm_mineBlocks",
+                            method: "evm_mine",
                             id: 12346,
-                            params: [1]
+                            params: []
                         },
                         (e, mineBlocks) => {
                             console.log("Timestamp succesfully increased");

@@ -12,37 +12,36 @@ const testrpcConfig = {
   // Testrpc Configuration
   addresses: {
     // optional: Allows to do market operations without passing the market address
-    defaultMarketFactory: '0x0634e653ee7cc2a01efca45a6b5365d7c2911f31',
+    defaultMarketFactory: '0x1ec884fd25e73edd024153e5ced3051738c8fd63',
 
     // optional: Allows calculating of share prices without passing the maker address
-    defaultMarketMaker: '0x1912f977d4ed325f145644a7151f410aed75c85b',
+    defaultMarketMaker: '0xd4762520d0bd6b4013fcd916a3b2995666eb3a4a',
 
     // obligatory
-    etherToken: '0xd4762520d0bd6b4013fcd916a3b2995666eb3a4a',
+    etherToken: '0xb7ead0f8e08594b0337d4332554962b69a201cfc',
 
     // obligatory
-    eventFactory: '0x4f4c243aa1a7f9ffb12cec09d9d6cb8b0130a8ae',
+    eventFactory: '0x31fd8a27f4abdbb74ad92539948cd69ef9fb88a7',
 
     // optional
-    ultimateOracle: '0xb7ead0f8e08594b0337d4332554962b69a201cfc',
+    ultimateOracle: '0x56007b8be4abb5be643b38ed26307706d4c222f8',
     // optional
-    lmsrMarketMaker: '0x1912f977d4ed325f145644a7151f410aed75c85b',
+    lmsrMarketMaker: '0xd4762520d0bd6b4013fcd916a3b2995666eb3a4a',
 
-    marketSol: '0x0634e653ee7cc2a01efca45a6b5365d7c2911f31',
+    hunchGameToken: '0xbf704508fa659f65aa86d05241aecb96d8cc74b3',
 
-    hunchGameToken: '0x31fd8a27f4abdbb74ad92539948cd69ef9fb88a7',
-    hunchGameMarketFactory: '0x1ec884fd25e73edd024153e5ced3051738c8fd63',
+    hunchGameMarketFactory: '0x34634e55cb3fb8742ef4cfd2286ac916c921aded',
   },
   addressFiltersPostLoad: {
-    marketMakers: ['0x1912f977d4ed325f145644a7151f410aed75c85b'],
-    oracles: ['0xb7ead0f8e08594b0337d4332554962b69a201cfc'],
-    tokens: ['0xd4762520d0bd6b4013fcd916a3b2995666eb3a4a', '0x31fd8a27f4abdbb74ad92539948cd69ef9fb88a7'],
+    marketMakers: ['0xd4762520d0bd6b4013fcd916a3b2995666eb3a4a'],
+    oracles: ['0x56007b8be4abb5be643b38ed26307706d4c222f8'],
+    tokens: ['0xb7ead0f8e08594b0337d4332554962b69a201cfc', '0xbf704508fa659f65aa86d05241aecb96d8cc74b3'],
   },
 
   addressFilters: {
     // optional: Only loads events from blockchain, which are resolved by
     // given oracle
-    oracle: '0xb7ead0f8e08594b0337d4332554962b69a201cfc',
+    oracle: '0x56007b8be4abb5be643b38ed26307706d4c222f8',
     // optional: Only loads markets from blockchain, which are created by
     // given investor
     investor: null,
@@ -93,14 +92,14 @@ const testrpcConfig = {
       'resolutionDate': '2018-11-02T08:30:30Z',
       'outcomes': ['Yes', 'No'],
       'fee': new BigNumber('0'),
-      'feeToken': '0xd4762520d0bd6b4013fcd916a3b2995666eb3a4a',
-      'resolverAddress': '0xb7ead0f8e08594b0337d4332554962b69a201cfc',
-      'tokenAddress': '0xd4762520d0bd6b4013fcd916a3b2995666eb3a4a',
+      'feeToken': '0xb7ead0f8e08594b0337d4332554962b69a201cfc',
+      'resolverAddress': '0x56007b8be4abb5be643b38ed26307706d4c222f8',
+      'tokenAddress': '0xb7ead0f8e08594b0337d4332554962b69a201cfc',
       'outcomeCount': 2,
       'market': {
         'fee': new BigNumber('0'),
         'initialFunding': new BigNumber('1e19'), // Minimum allowed funding is 1e19 tokens.
-        'makerAddress': '0x1912f977d4ed325f145644a7151f410aed75c85b',
+        'makerAddress': '0xd4762520d0bd6b4013fcd916a3b2995666eb3a4a',
       },
     },
   ],

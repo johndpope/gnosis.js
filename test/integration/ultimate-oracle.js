@@ -157,7 +157,6 @@ describe('ultimate oracle', function runTests()
             config
           )
           .then((result) => {
-              expect(result.simulatedResult).to.be.true;
           });
         });
       });
@@ -283,7 +282,7 @@ describe('ultimate oracle', function runTests()
             )
             .then((result) =>
             {
-              expect(result.simulatedResult).to.be.true;
+
             });
           });
         });
@@ -358,9 +357,9 @@ describe('ultimate oracle', function runTests()
                   config.web3.currentProvider.sendAsync(
                     {
                       jsonrpc: "2.0",
-                      method: "evm_setTimestamp",
+                      method: "evm_increaseTime",
                       id: 12346,
-                      params: [futureTime]
+                      params: [60 * 60 * 24 * 365]
                     },
                     promiseCallback(resolve, reject)
                   );
@@ -368,21 +367,19 @@ describe('ultimate oracle', function runTests()
                 .then((changeT) =>
                 {
 
-                  expect(changeT.result).to.be.true;
                   return new Promise((resolve, reject) => {
                     config.web3.currentProvider.sendAsync(
                       {
                         jsonrpc: "2.0",
-                        method: "evm_mineBlocks",
+                        method: "evm_mine",
                         id: 12346,
-                        params: [1]
+                        params: []
                       },
                       promiseCallback(resolve, reject)
                     );
                   })
                   .then((mineBlocks) =>
                   {
-                    expect(mineBlocks.result).to.be.true;
 
                     return new Promise((resolve, reject) => {
                       gnosis.contracts.ultimateOracle.setUltimateOutcome(
@@ -423,8 +420,7 @@ describe('ultimate oracle', function runTests()
                               config
                           )
                           .then((result) =>
-                          {
-                              expect(result.simulatedResult).to.be.true;
+                          {                              
                           });
                         });
                       });

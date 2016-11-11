@@ -33,105 +33,102 @@ describe('hunchgame', function runTests() {
     .then((initializedConfig) =>
     {
       config = initializedConfig;
-      return gnosis.contracts.hunchGameToken.setup(
-        config
-      ).then(function(){
-        let identifiers = gnosis.helpers.getEventIdentifiers(testEvent);
-        return gnosis.helpers.signOracleFee(
-          config.account,
-          identifiers.descriptionHash,
-          testEvent.fee,
-          config.addresses.hunchGameToken,
-          config
-        )
-        .then((feeData) => {
-          expect(feeData).to.be.a('object');
 
-          let hunchgameEvent = {
-            kind: 'discrete',
-            descriptionHash: identifiers.descriptionHash,
-            'fee': new BigNumber('0'),
-            'feeToken': config.addresses.hunchGameToken,
-            'outcomeCount': 2,
-            'resolverAddress': config.addresses.ultimateOracle,
-            'tokenAddress': config.addresses.hunchGameToken
-          };
+      let identifiers = gnosis.helpers.getEventIdentifiers(testEvent);
+      return gnosis.helpers.signOracleFee(
+        config.account,
+        identifiers.descriptionHash,
+        testEvent.fee,
+        config.addresses.hunchGameToken,
+        config
+      )
+      .then((feeData) => {
+        expect(feeData).to.be.a('object');
+
+        let hunchgameEvent = {
+          kind: 'discrete',
+          descriptionHash: identifiers.descriptionHash,
+          'fee': new BigNumber('0'),
+          'feeToken': config.addresses.hunchGameToken,
+          'outcomeCount': 2,
+          'resolverAddress': config.addresses.ultimateOracle,
+          'tokenAddress': config.addresses.hunchGameToken
+        };
+
+        return new Promise((resolve, reject) => {
+          gnosis.contracts.eventFactory.createOffChainEvent(
+            hunchgameEvent,
+            identifiers.descriptionHash,
+            [feeData],
+            config,
+            promiseCallback(resolve, reject)
+          ).catch(reject);
+        })
+        .then((receipt) => {
+          expect(receipt).to.be.a('object');
 
           return new Promise((resolve, reject) => {
-            gnosis.contracts.eventFactory.createOffChainEvent(
-              hunchgameEvent,
-              identifiers.descriptionHash,
-              [feeData],
+            gnosis.contracts.eventFactory.getEventHashes(
+              [identifiers.descriptionHash,],
+              [config.account],
               config,
               promiseCallback(resolve, reject)
-            ).catch(reject);
+            ).call();
           })
-          .then((receipt) => {
-            expect(receipt).to.be.a('object');
+          .then((eventHashes) => {
+            expect(eventHashes).to.be.a('array');
+            expect(eventHashes.length).to.equal(3);
+            eventHash = '0x'+eventHashes[eventHashes.length-1].toString(16);
 
             return new Promise((resolve, reject) => {
-              gnosis.contracts.eventFactory.getEventHashes(
-                [identifiers.descriptionHash,],
-                [config.account],
+              gnosis.contracts.eventFactory.getEvent(
+                eventHash,
                 config,
                 promiseCallback(resolve, reject)
               ).call();
             })
-            .then((eventHashes) => {
-              expect(eventHashes).to.be.a('array');
-              expect(eventHashes.length).to.equal(3);
-              eventHash = '0x'+eventHashes[eventHashes.length-1].toString(16);
+            .then((eventInfo) => {
+              expect(eventInfo).to.be.a('array');
 
-              return new Promise((resolve, reject) => {                
-                gnosis.contracts.eventFactory.getEvent(
-                  eventHash,
+              return new Promise((resolve, reject) => {
+                gnosis.contracts.token.approve(
+                  config.addresses.hunchGameToken,
+                  config.addresses.hunchGameMarketFactory,
+                  new BigNumber('1e19').plus('1e18'),
                   config,
                   promiseCallback(resolve, reject)
-                ).call();
+                );
               })
-              .then((eventInfo) => {
-                expect(eventInfo).to.be.a('array');
+              .then((receipt) => {
 
+                // Create market
                 return new Promise((resolve, reject) => {
-                  gnosis.contracts.token.approve(
-                    config.addresses.hunchGameToken,
-                    config.addresses.hunchGameMarketFactory,
-                    new BigNumber('1e19').plus('1e18'),
+                  gnosis.contracts.marketFactory.createMarket(
+                    market,
+                    eventHash,
                     config,
+                    config.addresses.hunchGameMarketFactory,
                     promiseCallback(resolve, reject)
-                  );
+                  ).catch(reject);
                 })
                 .then((receipt) => {
-
-                  // Create market
+                  expect(receipt).to.be.a('object');
                   return new Promise((resolve, reject) => {
-                    gnosis.contracts.marketFactory.createMarket(
-                      market,
-                      eventHash,
+                    gnosis.contracts.marketFactory.getMarketHashes(
+                      [eventHash],
+                      [config.account],
                       config,
                       config.addresses.hunchGameMarketFactory,
                       promiseCallback(resolve, reject)
-                    ).catch(reject);
+                    ).call();
                   })
-                  .then((receipt) => {
-                    expect(receipt).to.be.a('object');
-                    return new Promise((resolve, reject) => {
-                      gnosis.contracts.marketFactory.getMarketHashes(
-                        [eventHash],
-                        [config.account],
-                        config,
-                        config.addresses.hunchGameMarketFactory,
-                        promiseCallback(resolve, reject)
-                      ).call();
-                    })
-                    .then((result) => {
-                      expect(result).to.be.a('array');
-                      expect(result.length).to.equal(3);
-                      expect(result[0]).to.be.a('object');
-                      expect(result[0].toString(16)).to.be.a('string');
-                      marketHashes = result;
-                      marketHash = '0x' + result[result.length-1].toString(16);
-                    });
+                  .then((result) => {
+                    expect(result).to.be.a('array');
+                    expect(result.length).to.equal(3);
+                    expect(result[0]).to.be.a('object');
+                    expect(result[0].toString(16)).to.be.a('string');
+                    marketHashes = result;
+                    marketHash = '0x' + result[result.length-1].toString(16);
                   });
                 });
               });
@@ -277,8 +274,7 @@ describe('hunchgame', function runTests() {
       config
     )
     .then((result) =>
-    {
-      expect(result.simulatedResult).to.be.true;
+    {      
     });
   });
 

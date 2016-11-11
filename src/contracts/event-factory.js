@@ -145,6 +145,7 @@ export function createEvent(event, descriptionHash, validationData, config,
 /**
  * Gets the event_hashes for a given description_hashes of events
  * @param descriptionHashes
+ * @param creators
  * @param config
  * @param callback
  * @returns {Promise|Promise<T>}
@@ -165,6 +166,7 @@ export function getEventHashes(descriptionHashes, creators, config, callback) {
  * Returns an object of description hashes, where each description hash has a
  * collection of event hashes
  * @param descriptionHashes
+ * @param creators
  * @param config
  * @returns {*}
  */

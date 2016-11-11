@@ -6,6 +6,7 @@ import BigNumber from 'bignumber.js';
 import Promise from 'bluebird';
 import {expect} from 'chai';
 import gnosis from '../../src/';
+import * as hex from '../../src/lib/hex';
 import {promiseCallback} from '../../src/lib/callbacks';
 
 import testrpcConfig from './config';
@@ -69,7 +70,7 @@ describe('abstract token', function runTests()
           .then((eventHashes) => {
             expect(eventHashes).to.be.a('array');
             expect(eventHashes.length).to.equal(3);
-            eventHash = '0x'+eventHashes[eventHashes.length-1].toString(16);
+            eventHash = hex.encode(eventHashes[eventHashes.length-1], 256);
 
             return new Promise((resolve, reject) => {
               gnosis.contracts.eventFactory.getEvent(
@@ -125,7 +126,7 @@ describe('abstract token', function runTests()
                       expect(result[0]).to.be.a('object');
                       expect(result[0].toString(16)).to.be.a('string');
                       marketHashes = result;
-                      marketHash = '0x' + result[result.length-1].toString(16);
+                      marketHash = hex.encode(result[result.length-1], 256);
                     });
                   });
                 });

@@ -148,31 +148,29 @@ describe('abstract resolver', function runTests() {
                   config.web3.currentProvider.sendAsync(
                     {
                       jsonrpc: "2.0",
-                      method: "evm_setTimestamp",
+                      method: "evm_increaseTime",
                       id: 12346,
-                      params: [futureTime]
+                      params: [60*60*48]
                     },
                     promiseCallback(resolve, reject)
                   );
                 })
                 .then((changeT) =>
                 {
-                  expect(changeT.result).to.be.true;
 
                   return new Promise((resolve, reject) => {
                     config.web3.currentProvider.sendAsync(
                       {
                         jsonrpc: "2.0",
-                        method: "evm_mineBlocks",
+                        method: "evm_mine",
                         id: 12346,
-                        params: [1]
+                        params: []
                       },
                         promiseCallback(resolve, reject)
                       );
                   })
                   .then((mineBlocks) =>
                   {
-                    expect(mineBlocks.result).to.be.true;
 
                     return new Promise((resolve, reject) => {
                       config.web3.eth.getBlock(
@@ -244,31 +242,29 @@ describe('abstract resolver', function runTests() {
               config.web3.currentProvider.sendAsync(
                 {
                   jsonrpc: "2.0",
-                  method: "evm_setTimestamp",
+                  method: "evm_increaseTime",
                   id: 12346,
-                  params: [futureTime]
+                  params: [60*60*48]
                 },
                 promiseCallback(resolve, reject)
               );
             })
             .then((changeT) =>
             {
-              expect(changeT.result).to.be.true;
 
               return new Promise((resolve, reject) => {
                 config.web3.currentProvider.sendAsync(
                   {
                     jsonrpc: "2.0",
-                    method: "evm_mineBlocks",
+                    method: "evm_mine",
                     id: 12346,
-                    params: [1]
+                    params: []
                   },
                   promiseCallback(resolve, reject)
                 );
               })
               .then((mineBlocks) =>
               {
-                expect(mineBlocks.result).to.be.true;
                 return new Promise((resolve, reject) => {
                   gnosis.contracts.oracle.getOutcome(
                     config.addresses.ultimateOracle,
