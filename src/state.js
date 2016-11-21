@@ -121,7 +121,9 @@ export function updateEventDescriptions(config, filters){
         page_size: defaultFilters.pageSize,
         page: defaultFilters.page,
         title: defaultFilters.title,
-        tags: defaultFilters.tags
+        tags: defaultFilters.tags,
+        resolution_date_gt: defaultFilters.resolutionDate?new Date().toISOString():null,
+        resolution_date_lt: defaultFilters.resolutionDate
       }
     )
     .then((eventResponse) => {
