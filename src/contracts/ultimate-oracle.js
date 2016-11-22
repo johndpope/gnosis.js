@@ -8,7 +8,7 @@ import {requestWithBlockNumber} from '../lib/web3-batch';
 import * as abi from '../abi';
 import BigNumber from 'bignumber.js';
 import {decodeSignature, outcomeHash} from '../helpers';
-import * as hex from '../../src/lib/hex';
+import * as hex from '../lib/hex';
 import _ from 'lodash';
 
 export function getOracleOutcomes(descriptionHashes, oracleAddresses, config,

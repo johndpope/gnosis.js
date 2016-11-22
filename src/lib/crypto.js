@@ -18,8 +18,8 @@ export function evmKeccak(...prefixedHexArgs) {
   const hexArgs = prefixedHexArgs.map(arg => arg.slice(2));
   const hexMessage = hexArgs.join('');
   // Parse the hex-encoded bytes into a WordArray that CryptoJS can handle.
-  const message: WordArray = CryptoJS.enc.Hex.parse(hexMessage);
-  const hash: WordArray = CryptoJS.SHA3(message, {outputLength: 256});
+  const message = CryptoJS.enc.Hex.parse(hexMessage);
+  const hash = CryptoJS.SHA3(message, {outputLength: 256});
   return '0x' + hash.toString(CryptoJS.enc.Hex);
 }
 
@@ -41,6 +41,6 @@ export function signHex(keypair, hex){
  * must be parsed into WordArrays first.
  */
 export function signMessageHash(keypair, message){
-  const hash: WordArray = CryptoJS.SHA3(message, {outputLength: 256});
+  const hash = CryptoJS.SHA3(message, {outputLength: 256});
   return signHex(keypair, hash.toString(CryptoJS.enc.Hex));
 }

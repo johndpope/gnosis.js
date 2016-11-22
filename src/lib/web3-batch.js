@@ -19,7 +19,7 @@ import {inputDefaultBlockNumberFormatter} from 'web3/lib/web3/formatters';
  * into as few requests as possible.
  */
 export class Batcher {
-  constructor(config: BatcherConfig) {
+  constructor(config) {
     this.config = config;
     this._clear();
   }

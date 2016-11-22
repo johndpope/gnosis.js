@@ -131,7 +131,7 @@ export function signOracleFee(oracleAddress, descriptionHash, fee, feeToken,
   });
 }
 
-export function signMsg(account, message: String, config){
+export function signMsg(account, message, config){
     const msgHash = '0x' + CryptoJS.SHA3(message,  { outputLength: 256 })
       .toString(CryptoJS.enc.hex);
 

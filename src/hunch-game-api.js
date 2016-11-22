@@ -57,7 +57,7 @@ export function getUser(config) {
  * @param user
  * @returns {axios.Promise}
  */
-export function updateUser(config, user: User){
+export function updateUser(config, user){
     return axios.put(config.gnosisServiceURL + 'hunchgame/user/', user).catch((response) => {
         console.error('Error while updating user!');
         throw response;

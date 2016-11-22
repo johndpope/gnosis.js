@@ -1,15 +1,8 @@
 import BigNumber from 'bignumber.js';
 import {promiseCallback} from './callbacks';
-
-import type Web3 from 'web3';
 import * as state from '../state';
 
-// ReceiptConfig is a subset of gnosis.config.Config.
-type ReceiptConfig = {
- web3: Web3,
- batch: any,
- receiptPromises: any,
-};
+
 
 export function isResultZero(result) {
   return result === '0x' || new BigNumber(result, 16).eq(0);
