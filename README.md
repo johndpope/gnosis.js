@@ -23,6 +23,7 @@ Install
 ==========
 ```
 npm install gnosisjs
+bower install gnosisjs
 ```
 
 Docs
