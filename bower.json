@@ -1,0 +1,22 @@
+{
+  "name": "gnosisjs",
+  "description": "A javascript library for building applications on top of Gnosis, the Ethereum prediction market platform",
+  "main": "dist/gnosis.js",
+  "authors": [
+    "Denis Granha <denis.granha@consensys.net>"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "ethereum",
+    "gnosis",
+    "gnosisjs"
+  ],
+  "homepage": "https://github.com/ConsenSys/gnosis.js",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
