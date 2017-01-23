@@ -234,6 +234,9 @@ var gnosis =
 	        _this.account = '0x0000000000000000000000000000000000000000';
 	      }
 	      _this.accounts = result;
+	    }, function (error) {
+	      _this.account = '0x0000000000000000000000000000000000000000';
+	      _this.accounts = [];
 	    });
 	  } else {
 	    this.initialize = _promise2.default.resolve();
@@ -53019,7 +53022,6 @@ var gnosis =
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	// ReceiptConfig is a subset of gnosis.config.Config.
 	function isResultZero(result) {
 	  return result === '0x' || new _bignumber2.default(result, 16).eq(0);
 	}

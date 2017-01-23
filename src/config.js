@@ -89,6 +89,10 @@ export class Config {
           this.account = '0x0000000000000000000000000000000000000000';
         }
         this.accounts = result;
+      },
+      (error) => {
+        this.account = '0x0000000000000000000000000000000000000000';
+        this.accounts = [];
       });
     } else {
       this.initialize = Promise.resolve();
