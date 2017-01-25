@@ -36,8 +36,13 @@ export function callAndSendTransaction(contractFunction, subjectName, args, conf
       // console.log("gas price: %s", gasPrice);
       args[args.length-1].gasPrice = gasPrice ;
       return new Promise((resolve, reject) => {
-        const callArgs = args.concat(promiseCallback(resolve, reject));
-        contractFunction.call.apply(contractFunction, callArgs);
+        if (config.callBeforeTransaction) {
+          const callArgs = args.concat(promiseCallback(resolve, reject));
+          contractFunction.call.apply(contractFunction, callArgs);
+        }
+        else {
+          resolve();
+        }
       });
   })
   .then(predictSuccess)

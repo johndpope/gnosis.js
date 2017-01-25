@@ -192,7 +192,10 @@ var gnosis =
 	  additionalUpdates: null,
 
 	  transactionsLoop: true, // transactions receipt loop
-	  requestBlockNumberTimeout: 5
+	  requestBlockNumberTimeout: 5,
+
+	  // Before every transaction it's done a fake one, that allows to save the gas in case of fail
+	  callBeforeTransaction: true
 	};
 
 	function buildWeb3(nodeURL) {
@@ -53064,8 +53067,12 @@ var gnosis =
 	    // console.log("gas price: %s", gasPrice);
 	    args[args.length - 1].gasPrice = gasPrice;
 	    return new _promise2.default(function (resolve, reject) {
-	      var callArgs = args.concat((0, _callbacks.promiseCallback)(resolve, reject));
-	      contractFunction.call.apply(contractFunction, callArgs);
+	      if (config.callBeforeTransaction) {
+	        var callArgs = args.concat((0, _callbacks.promiseCallback)(resolve, reject));
+	        contractFunction.call.apply(contractFunction, callArgs);
+	      } else {
+	        resolve();
+	      }
 	    });
 	  }).then(predictSuccess).then(function (simulatedResult) {
 	    return new _promise2.default(function (resolve, reject) {

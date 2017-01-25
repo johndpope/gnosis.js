@@ -47,7 +47,10 @@ export const defaultConfig = {
   additionalUpdates: null,
 
   transactionsLoop: true, // transactions receipt loop
-  requestBlockNumberTimeout: 5
+  requestBlockNumberTimeout: 5,
+
+  // Before every transaction it's done a fake one, that allows to save the gas in case of fail
+  callBeforeTransaction: true
 };
 
 function buildWeb3(nodeURL){
