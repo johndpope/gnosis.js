@@ -41,7 +41,7 @@ export function callAndSendTransaction(contractFunction, subjectName, args, conf
           contractFunction.call.apply(contractFunction, callArgs);
         }
         else {
-          resolve();
+          resolve(new BigNumber(1));
         }
       });
   })
