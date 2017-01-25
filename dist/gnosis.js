@@ -53071,7 +53071,7 @@ var gnosis =
 	        var callArgs = args.concat((0, _callbacks.promiseCallback)(resolve, reject));
 	        contractFunction.call.apply(contractFunction, callArgs);
 	      } else {
-	        resolve();
+	        resolve(new _bignumber2.default(1));
 	      }
 	    });
 	  }).then(predictSuccess).then(function (simulatedResult) {
