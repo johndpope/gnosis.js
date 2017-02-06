@@ -279,8 +279,19 @@ export function getEventsProcessed(eventHashes, resolverAddress, tokenAddress,
 
 
         if (events[eventHash].kind === constants.KIND_RANGED) {
+          if (contractData[eventIndex + 3].greaterThan(new BigNumber(2).pow(128))) {
+            events[eventHash].lowerBound = contractData[eventIndex + 3].minus(new BigNumber(2).pow(256));
+          }
+          else {
             events[eventHash].lowerBound = contractData[eventIndex + 3];
+          }
+
+          if (contractData[eventIndex + 4].greaterThan(new BigNumber(2).pow(128))) {
+            events[eventHash].upperBound = contractData[eventIndex + 4].minus(new BigNumber(2).pow(256));
+          }
+          else {
             events[eventHash].upperBound = contractData[eventIndex + 4];
+          }
         }
 
         eventIndex += 11 + outcomeCount;
