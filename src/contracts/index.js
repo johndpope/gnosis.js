@@ -11,6 +11,7 @@ import * as hunchGameMarketFactory from './hunch-game-market-factory';
 import * as marketFactory from './market-factory';
 import * as token from './token';
 import * as etherToken from './ether-token';
+import * as makerToken from './maker-token.js';
 
 export default {eventFactory, marketMaker, oracle, ultimateOracle,
-  hunchGameToken, hunchGameMarketFactory, marketFactory, token, etherToken}
+  hunchGameToken, hunchGameMarketFactory, marketFactory, token, etherToken, makerToken};

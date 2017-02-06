@@ -421,13 +421,17 @@ export function updateTokens(tokenAddresses, config) {
           balances[tokenAddress] = {};
             return new Promise((resolve, reject) => {
                 // Ether balance
-                if (tokenAddress == 0) {
-                    config.web3.eth.getBalance(config.account, (e, ethBalance) => {
-                      Object.assign(balances[tokenAddress], {value: ethBalance});
-                      resolve();
-                    });
+                if (tokenAddress === 0) {
+                  config.web3.eth.getBalance(config.account, (e, ethBalance) => {
+                    Object.assign(balances[tokenAddress], {value: ethBalance});
+                    resolve();
+                  });
+                } else if (tokenAddress === config.addresses.makerToken) {
+                  abstractToken.balanceOf(tokenAddress, config.account, config, (e, tokenBalance) => {
+                    Object.assign(balances[tokenAddress], {value: tokenBalance, name: 'Maker ETH Wrapper', symbol: 'ETH'});
+                    resolve();
+                  }).call();
                 } else {
-
                     // token balance
                     let balancePromise = new Promise((resolve, reject) => {
                       batch.add(
@@ -446,6 +450,10 @@ export function updateTokens(tokenAddresses, config) {
                           (e, tokenName) => {
                             Object.assign(balances[tokenAddress], {name: tokenName});
                             resolve();
+                          },
+                          () => {
+                            Object.assign(balances[tokenAddress], {name: ''});
+                            resolve();
                           }
                         )
                       );
@@ -460,6 +468,10 @@ export function updateTokens(tokenAddresses, config) {
                           (e, tokenSymbol) => {
                             Object.assign(balances[tokenAddress], {symbol: tokenSymbol});
                             resolve();
+                          },
+                          () => {
+                            Object.assign(balances[tokenAddress], {symbol: ''});
+                            resolve();
                           }
                         )
                       );
@@ -473,6 +485,10 @@ export function updateTokens(tokenAddresses, config) {
                           config,
                           (e, tokenDecimals) => {
                             Object.assign(balances[tokenAddress], {decimals: tokenDecimals});
+                            resolve();
+                          },
+                          () => {
+                            Object.assign(balances[tokenAddress], {decimals: 0});
                             resolve();
                           }
                         )
