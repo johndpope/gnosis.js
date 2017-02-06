@@ -16,15 +16,16 @@ export const defaultConfig = {
     etherToken: '0x92f1dbea03ce08225e31e95cc926ddbe0198e6f2',
     eventFactory: '0x5aae5c59d642e5fd45b427df6ed478b49d55fefd',
     ultimateOracle: '0x529c4cb814029b8bb32acb516ea3a4b07fdae350',
-    lmsrMarketMaker: '0x8695e5e79dab06fbbb05f445316fa4edb0da30f0'
+    lmsrMarketMaker: '0x8695e5e79dab06fbbb05f445316fa4edb0da30f0',
+    makerToken: '0xecf8f87f810ecf450940c9f60066b4a7a501d6a7',
   },
   addressFilters: {
-    oracle: '0x529c4cb814029b8bb32acb516ea3a4b07fdae350'
+    oracle: '0x529c4cb814029b8bb32acb516ea3a4b07fdae350',
   },
   eventDescriptionFilters: {
     oracleAddresses: null,
     includeWhitelistedOracles: false,
-    pageSize: 10
+    pageSize: 10,
   },
   addressFiltersPostLoad: {
     marketMakers: ['0x8695e5e79dab06fbbb05f445316fa4edb0da30f0'],
@@ -50,14 +51,14 @@ export const defaultConfig = {
   requestBlockNumberTimeout: 5,
 
   // Before every transaction it's done a fake one, that allows to save the gas in case of fail
-  callBeforeTransaction: true
+  callBeforeTransaction: true,
 };
 
-function buildWeb3(nodeURL){
-  //let engine = new ProviderEngine();
+function buildWeb3(nodeURL) {
+  // let engine = new ProviderEngine();
   return new Web3(new Web3.providers.HttpProvider(nodeURL));
 
-  /*engine.addProvider(new RpcSubprovider({
+  /* engine.addProvider(new RpcSubprovider({
     rpcUrl: nodeURL,
   }));
   engine.start();*/
@@ -73,27 +74,27 @@ export class Config {
       );
     }
 
-    //for(let contractName in this.addresses){
+    // for(let contractName in this.addresses){
     //  this.addresses[contractName] = web3.toChecksumAddress(this.addresses[contractName]);
-    //}
-    //this.rxWeb3 = new RxWeb3(this.web3);
+    // }
+    // this.rxWeb3 = new RxWeb3(this.web3);
 
     if (this.account == null) {
       // Load an account from the web3 provider as a fallback. this.initialize
       // is a Promise that clients can wait on to make sure initialization has
       // completed before they use this data.
       this.initialize = new Promise((resolve, reject) => {
-          this.web3.eth.getAccounts(promiseCallback(resolve, reject));
+        this.web3.eth.getAccounts(promiseCallback(resolve, reject));
       }).then((result) => {
-        if(result.length > 0){
+        if (result.length > 0) {
           this.account = result[0];
         }
-        else{
+        else {
           this.account = '0x0000000000000000000000000000000000000000';
         }
         this.accounts = result;
       },
-      (error) => {
+      () => {
         this.account = '0x0000000000000000000000000000000000000000';
         this.accounts = [];
       });
@@ -111,31 +112,29 @@ export class Config {
   }
 }
 
-function checkTransactions(config){
-  let stateSnapshot = state.get(config);
+function checkTransactions(config) {
+  const stateSnapshot = state.get(config);
 
   // Check if there is a new block
   config.web3.eth.getBlockNumber(
       (error, blockNumber) => {
-        if(blockNumber != stateSnapshot.blockNumber){
+        if (blockNumber !== stateSnapshot.blockNumber){
           // Update state blocknumber
           state.updateBlocknumber(config);
 
           // Get transactions from state
-          let transactions = stateSnapshot.transactions;
+          const transactions = stateSnapshot.transactions;
 
           // batch requests
-          let batch = config.web3.createBatch();
+          const batch = config.web3.createBatch();
 
           // Check receipts for each pending transactions
-          for(let key in transactions){
-            let transaction = transactions[key];
+          for (let key in transactions) {
+            const transaction = transactions[key];
 
-            if(transaction.receipt == null){
+            if (transaction.receipt == null) {
               batch.add(config.web3.eth.getTransactionReceipt.request(
-                key,
-                (e, receipt) =>
-                {
+                key, (e, receipt) => {
                   if(
                       e == null &&
                       receipt &&
