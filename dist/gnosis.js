@@ -115301,6 +115301,7 @@ var gnosis =
 	exports.calcCostsBuyingWithFees = calcCostsBuyingWithFees;
 	exports.calcEarningsSelling = calcEarningsSelling;
 	exports.calcEarningsSellingWithFees = calcEarningsSellingWithFees;
+	exports.calcShares = calcShares;
 
 	var _bignumber = __webpack_require__(77);
 
@@ -115488,6 +115489,20 @@ var gnosis =
 	  return marketFactory.calcMarketFee(marketHash, earnings, config, config.addresses.lmsrMarketMaker).then(function (marketFee) {
 	    return earnings.min(marketFee);
 	  });
+	}
+
+	function calcShares(tokens, outcomeIndex, shareDistribution, initialFunding) {
+	  var b = initialFunding / Math.log(shareDistribution.length);
+
+	  return b * Math.log(shareDistribution.reduce(function (summation, shareCount) {
+	    return summation + Math.pow(shareCount / b + tokens / b);
+	  }) - shareDistribution.reduce(function (summation, shareCount, index) {
+	    var result = summation;
+	    if (index !== outcomeIndex) {
+	      result = summation + Math.pow(shareCount / b + tokens / b);
+	    }
+	    return result;
+	  })) - shareDistribution[outcomeIndex];
 	}
 
 	// TODO calcSharesSellingWithFees

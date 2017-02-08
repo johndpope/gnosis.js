@@ -192,5 +192,22 @@ export function calcEarningsSellingWithFees(marketHash, initial_funding, share_d
     });
 }
 
+export function calcShares(tokens, outcomeIndex, shareDistribution, initialFunding) {
+  const b = initialFunding / Math.log(shareDistribution.length);
+
+  return b * Math.log(
+    shareDistribution.reduce( (summation, shareCount) => {
+      return summation + Math.pow(shareCount / b + tokens / b);
+    }) -
+    shareDistribution.reduce( (summation, shareCount, index) => {
+      let result = summation;
+      if (index !== outcomeIndex) {
+        result = summation + Math.pow(shareCount / b + tokens / b);
+      }
+      return result;
+    })
+  ) - shareDistribution[outcomeIndex];
+}
+
 // TODO calcSharesSellingWithFees
 // TODO calcSharesBuyingWithFees
