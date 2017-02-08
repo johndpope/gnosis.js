@@ -115508,7 +115508,7 @@ var gnosis =
 	    return result;
 	  }, new _bignumber2.default(0));
 	  var thirdValue = firstValue.minus(secondValue);
-	  var numShares = b.mul(new _bignumber2.default(Math.log(thirdValue.toNumber()))).minus(shareDistribution[outcomeIndex]);
+	  var numShares = b.mul(new _bignumber2.default(Math.log(thirdValue.toNumber()))).minus(shareDistribution[outcomeIndex]).mul('0.999');
 	  return numShares;
 	}
 

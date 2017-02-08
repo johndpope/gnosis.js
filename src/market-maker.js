@@ -210,7 +210,7 @@ export function calcShares(tokens, outcomeIndex, shareDistribution, initialFundi
     return result;
   }, new BigNumber(0));
   const thirdValue = firstValue.minus(secondValue);
-  const numShares = b.mul(new BigNumber(Math.log(thirdValue.toNumber()))).minus(shareDistribution[outcomeIndex]);
+  const numShares = b.mul(new BigNumber(Math.log(thirdValue.toNumber()))).minus(shareDistribution[outcomeIndex]).mul('0.999');
   return numShares;
 }
 
