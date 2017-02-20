@@ -192,27 +192,5 @@ export function calcEarningsSellingWithFees(marketHash, initial_funding, share_d
     });
 }
 
-export function calcShares(tokens, outcomeIndex, shareDistribution, initialFunding) {
-  // TODO move this to index
-  BigNumber.config({ ERRORS: false });
-  const b = new BigNumber(initialFunding).div(Math.log(shareDistribution.length));
-
-  const firstValue = shareDistribution.reduce( (summation, shareCount) => {
-    return summation.plus(Math.exp(new BigNumber(shareCount).div(b).plus(new BigNumber(tokens).div(b).toNumber())));
-  }, new BigNumber(0));
-
-  const secondValue =
-  shareDistribution.reduce( (summation, shareCount, index) => {
-    let result = summation;
-    if (index !== new BigNumber(outcomeIndex).toNumber()) {
-      result = summation.plus(Math.exp(new BigNumber(shareCount).div(b.plus(new BigNumber(tokens).div(b))).toNumber()));
-    }
-    return result;
-  }, new BigNumber(0));
-  const thirdValue = firstValue.minus(secondValue);
-  const numShares = b.mul(new BigNumber(Math.log(thirdValue.toNumber()))).minus(shareDistribution[outcomeIndex]).mul('0.999');
-  return numShares;
-}
-
 // TODO calcSharesSellingWithFees
 // TODO calcSharesBuyingWithFees

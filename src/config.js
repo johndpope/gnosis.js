@@ -86,13 +86,14 @@ export class Config {
       this.initialize = new Promise((resolve, reject) => {
         this.web3.eth.getAccounts(promiseCallback(resolve, reject));
       }).then((result) => {
-        if (result.length > 0) {
+        if (result && result.length > 0) {
           this.account = result[0];
+          this.accounts = result;
         }
         else {
           this.account = '0x0000000000000000000000000000000000000000';
+          this.accounts = [];
         }
-        this.accounts = result;
       },
       () => {
         this.account = '0x0000000000000000000000000000000000000000';
