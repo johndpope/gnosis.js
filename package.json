@@ -1,6 +1,6 @@
 {
   "name": "gnosisjs",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "description": "A javascript library for building applications on top of Gnosis, the Ethereum prediction market platform",
   "main": "src/main.js",
   "scripts": {

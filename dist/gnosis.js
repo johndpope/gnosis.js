@@ -115302,6 +115302,7 @@ var gnosis =
 	exports.calcCostsBuyingWithFees = calcCostsBuyingWithFees;
 	exports.calcEarningsSelling = calcEarningsSelling;
 	exports.calcEarningsSellingWithFees = calcEarningsSellingWithFees;
+	exports.calcShares = calcShares;
 
 	var _bignumber = __webpack_require__(77);
 
@@ -115493,6 +115494,27 @@ var gnosis =
 
 	// TODO calcSharesSellingWithFees
 	// TODO calcSharesBuyingWithFees
+
+	function calcShares(tokens, outcomeIndex, shareDistribution, initialFunding) {
+	  // TODO move this to index
+	  _bignumber2.default.config({ ERRORS: false });
+	  var b = new _bignumber2.default(initialFunding).div(Math.log(shareDistribution.length));
+
+	  var firstValue = shareDistribution.reduce(function (summation, shareCount) {
+	    return summation.plus(Math.exp(new _bignumber2.default(shareCount).div(b).plus(new _bignumber2.default(tokens).div(b).toNumber())));
+	  }, new _bignumber2.default(0));
+
+	  var secondValue = shareDistribution.reduce(function (summation, shareCount, index) {
+	    var result = summation;
+	    if (index !== new _bignumber2.default(outcomeIndex).toNumber()) {
+	      result = summation.plus(Math.exp(new _bignumber2.default(shareCount).div(b.plus(new _bignumber2.default(tokens).div(b))).toNumber()));
+	    }
+	    return result;
+	  }, new _bignumber2.default(0));
+	  var thirdValue = firstValue.minus(secondValue);
+	  var numShares = b.mul(new _bignumber2.default(Math.log(thirdValue.toNumber()))).minus(shareDistribution[outcomeIndex]).mul('0.999');
+	  return numShares;
+	}
 
 /***/ },
 /* 421 */
