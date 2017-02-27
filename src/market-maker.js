@@ -195,8 +195,16 @@ export function calcEarningsSellingWithFees(marketHash, initial_funding, share_d
 // TODO calcSharesSellingWithFees
 // TODO calcSharesBuyingWithFees
 
-export function calcShares(tokens, outcomeIndex, shareDistribution, initialFunding) {
+export function calcShares(tokens, outcomeIndex, shareDistributionRaw, initialFunding) {
   // TODO move this to index
+  const maxShares = shareDistributionRaw.reduce((maximum, shareCount) => {
+    return shareCount.greaterThan(maximum) ? shareCount : maximum;
+  }, new BigNumber('0'));
+
+  const shareDistribution = shareDistributionRaw.map((shareCount) => {
+    return maxShares.minus(shareCount);
+  });
+
   BigNumber.config({ ERRORS: false });
   const b = new BigNumber(initialFunding).div(Math.log(shareDistribution.length));
 

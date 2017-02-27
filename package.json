@@ -1,13 +1,13 @@
 {
   "name": "gnosisjs",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "description": "A javascript library for building applications on top of Gnosis, the Ethereum prediction market platform",
   "main": "src/main.js",
   "scripts": {
     "test": "mocha --require babel-register --require babel-polyfill",
     "integration-test": "mocha --require babel-register --require babel-polyfill ./test/integration/*.js",
     "post-create-test": "mocha --require babel-register --require babel-polyfill ./test/integration/post-create/*.js",
-    "dist": "webpack && webpack --optimize-minimize --output-file dist/gnosis.min.js",
+    "dist": "webpack",
     "babel": "babel src -d lib"
   },
   "author": "Denis Granha <denis.granha@consensys.net>",

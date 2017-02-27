@@ -73,7 +73,7 @@ const testrpcConfig = {
 
   // Common configuration
 
-  removeEvents: true,
+  removeEvents: false,
   eventDescriptionFilters : {
     resolutionDate: new Date().setDate(new Date().getDate()+60),
     oracleAddresses: [],
